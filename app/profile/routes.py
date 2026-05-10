@@ -1,9 +1,81 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, g, render_template, request
+from sqlalchemy import func
+
+from app.game.logic import DIFFICULTY_CONFIG
+from app.auth.decorators import login_required
+from app import db
+from app.models import Game
 
 profile_bp = Blueprint("profile", __name__)
 
 
-@profile_bp.get("/")
+@profile_bp.route("/", methods=["GET"], strict_slashes=False)
+@login_required
 def profile_index():
-    # User profile aggregation depends on models and auth, which are added later.
-    return jsonify({"blueprint": "profile", "message": "Profile endpoints arrive in Phase 6."}), 200
+    user_id = g.current_user.id
+
+    totals = (
+        db.session.query(
+            func.count(Game.id).label("total_games"),
+            func.count().filter(Game.status == "won").label("total_wins"),
+            func.max(Game.score).filter(Game.status == "won").label("best_score"),
+        )
+        .filter(Game.user_id == user_id)
+        .one()
+    )
+
+    total_games = totals.total_games or 0
+    total_wins = totals.total_wins or 0
+    best_score = totals.best_score or 0
+    win_rate = round((total_wins / total_games) * 100, 1) if total_games else 0.0
+
+    difficulty_rows = (
+        db.session.query(
+            Game.difficulty,
+            func.count(Game.id).label("count"),
+        )
+        .filter(Game.user_id == user_id)
+        .group_by(Game.difficulty)
+        .all()
+    )
+    difficulty_counts = {row.difficulty: row.count for row in difficulty_rows}
+    games_by_difficulty = []
+    for difficulty, settings in DIFFICULTY_CONFIG.items():
+        count = difficulty_counts.get(difficulty, 0)
+        percentage = round((count / total_games) * 100, 1) if total_games else 0.0
+        games_by_difficulty.append(
+            {
+                "difficulty": difficulty,
+                "count": count,
+                "percentage": percentage,
+                "range_label": f"{settings['min']} to {settings['max']}",
+            }
+        )
+
+    recent_games = (
+        Game.query.filter_by(user_id=user_id)
+        .order_by(Game.started_at.desc(), Game.id.desc())
+        .limit(10)
+        .all()
+    )
+
+    selected_game_id = request.args.get("game", type=int)
+    selected_game = None
+    if selected_game_id is not None:
+        selected_game = (
+            Game.query.filter_by(id=selected_game_id, user_id=user_id)
+            .first()
+        )
+    elif recent_games:
+        selected_game = recent_games[0]
+
+    return render_template(
+        "profile/profile.html",
+        total_games=total_games,
+        total_wins=total_wins,
+        win_rate=win_rate,
+        best_score=best_score,
+        games_by_difficulty=games_by_difficulty,
+        recent_games=recent_games,
+        selected_game=selected_game,
+    )
