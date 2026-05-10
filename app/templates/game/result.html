@@ -46,11 +46,19 @@
                     {{ game.status.title() }}
                 </span>
             </p>
+            {% if leaderboard_rank %}
+                <p class="mt-3 text-sm text-cyan-200">
+                    You ranked #{{ leaderboard_rank }} on the leaderboard!
+                </p>
+            {% endif %}
         </div>
 
         <div class="mt-8 flex flex-col gap-4 sm:flex-row">
             <a class="rounded-lg bg-cyan-500 px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-400" href="{{ url_for('game.select_game') }}">
                 Play Again
+            </a>
+            <a class="rounded-lg border border-cyan-500/40 px-5 py-3 text-center font-semibold text-cyan-200 transition hover:border-cyan-400 hover:text-cyan-100" href="{{ url_for('leaderboard.leaderboard_index') }}">
+                View Leaderboard
             </a>
             <a class="rounded-lg border border-slate-700 px-5 py-3 text-center font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white" href="{{ url_for('game.play_game') }}">
                 Back to Active Game

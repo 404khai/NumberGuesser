@@ -371,7 +371,7 @@ def attempts_remaining(game: Game) -> int: ...
 ```
 
 ---
-
+```
 ### PHASE 5 PROMPT — Scoring & Leaderboard
 
 ```

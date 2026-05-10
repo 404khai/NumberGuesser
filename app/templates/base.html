@@ -11,7 +11,9 @@
         <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
             <a class="text-xl font-semibold text-cyan-400" href="{{ url_for('index') }}">NumberGuesser</a>
             <div class="flex items-center gap-4 text-sm">
+                <a class="text-slate-300 transition hover:text-white" href="{{ url_for('leaderboard.leaderboard_index') }}">Leaderboard</a>
                 {% if g.current_user %}
+                    <a class="text-slate-300 transition hover:text-white" href="{{ url_for('game.select_game') }}">Play</a>
                     <span class="text-slate-400">Signed in as {{ g.current_user.username }}</span>
                     <a class="text-slate-300 transition hover:text-white" href="{{ url_for('auth.logout') }}">Logout</a>
                 {% else %}

@@ -10,6 +10,7 @@ from app.game.logic import (
     evaluate_guess,
     generate_secret,
 )
+from app.leaderboard.routes import get_game_rank
 from app import db
 from app.models import Game, Guess
 
@@ -151,6 +152,7 @@ def game_result():
         game=completed_game,
         difficulty_settings=DIFFICULTY_CONFIG[completed_game.difficulty],
         remaining_attempts=attempts_remaining(completed_game),
+        leaderboard_rank=get_game_rank(completed_game),
     )
 
 
