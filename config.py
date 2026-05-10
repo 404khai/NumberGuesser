@@ -14,7 +14,7 @@ class BaseConfig:
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "dev-jwt-secret-key")
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL",
-        "sqlite:///numberguesser.db",
+        "postgresql://user:yourpasswordhere@localhost:5432/numberguesser_db",
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

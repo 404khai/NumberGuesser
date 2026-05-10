@@ -5,7 +5,8 @@ from flask import Flask, jsonify
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, get_jwt_identity, verify_jwt_in_request
+from flask_jwt_extended.exceptions import JWTExtendedException
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
@@ -77,6 +78,21 @@ def _register_admin_views() -> None:
 
 
 def _register_core_routes(app: Flask) -> None:
+    @app.before_request
+    def load_current_user():
+        from flask import g
+        from app.models import User
+
+        g.current_user = None
+
+        try:
+            verify_jwt_in_request(optional=True, locations=["cookies"])
+            identity = get_jwt_identity()
+            if identity is not None:
+                g.current_user = db.session.get(User, int(identity))
+        except (JWTExtendedException, ValueError, TypeError):
+            g.current_user = None
+
     @app.get("/health")
     def health_check():
         return jsonify({"status": "ok"}), 200
