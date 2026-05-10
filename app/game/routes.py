@@ -1,9 +1,18 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, render_template
+
+from app.auth.decorators import login_required
 
 game_bp = Blueprint("game", __name__)
 
 
 @game_bp.get("/")
+@login_required
 def game_index():
-    # Gameplay is intentionally deferred until the dedicated game-engine phase.
-    return jsonify({"blueprint": "game", "message": "Gameplay endpoints arrive in Phase 4."}), 200
+    return render_template("game/select.html")
+
+
+@game_bp.get("/select")
+@login_required
+def select_game():
+    # Phase 4 will replace this placeholder with difficulty selection logic.
+    return render_template("game/select.html")
