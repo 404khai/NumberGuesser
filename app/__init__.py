@@ -3,7 +3,6 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, jsonify
 from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, get_jwt_identity, verify_jwt_in_request
 from flask_jwt_extended.exceptions import JWTExtendedException
@@ -19,13 +18,18 @@ bcrypt = Bcrypt()
 jwt = JWTManager()
 csrf = CSRFProtect()
 
-# The admin shell is initialized now so future phases only need to register views.
-admin = Admin(name="NumberGuesser Admin", template_mode="bootstrap4")
+from app.admin import DashboardAdminIndexView, register_admin_commands, register_admin_views
 
-
-class BasicModelView(ModelView):
-    can_view_details = True
-    page_size = 25
+# The admin extension is configured up front so the custom secure dashboard owns `/admin/`.
+admin = Admin(
+    name="NumberGuesser Admin",
+    template_mode="bootstrap4",
+    index_view=DashboardAdminIndexView(
+        name="Dashboard",
+        endpoint="admin",
+        url="/admin",
+    ),
+)
 
 
 def create_app(config_class=None) -> Flask:
@@ -38,7 +42,7 @@ def create_app(config_class=None) -> Flask:
     app.config.from_object(selected_config)
 
     _init_extensions(app)
-    _register_admin_views()
+    _register_admin(app)
     _register_core_routes(app)
     _register_blueprints(app)
     _register_jwt_error_handlers()
@@ -58,23 +62,9 @@ def _init_extensions(app: Flask) -> None:
     admin.init_app(app)
 
 
-def _register_admin_views() -> None:
-    from app.models import Feedback, Game, Guess, User
-
-    registered_models = {
-        getattr(view, "model", None)
-        for view in admin._views
-    }
-
-    for model in (User, Game, Guess, Feedback):
-        if model not in registered_models:
-            admin.add_view(
-                BasicModelView(
-                    model,
-                    db.session,
-                    endpoint=f"admin_{model.__tablename__}",
-                )
-            )
+def _register_admin(app: Flask) -> None:
+    register_admin_views(admin)
+    register_admin_commands(app)
 
 
 def _register_core_routes(app: Flask) -> None:
