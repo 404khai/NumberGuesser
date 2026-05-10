@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, jsonify
 from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
@@ -21,6 +22,11 @@ csrf = CSRFProtect()
 admin = Admin(name="NumberGuesser Admin", template_mode="bootstrap4")
 
 
+class BasicModelView(ModelView):
+    can_view_details = True
+    page_size = 25
+
+
 def create_app(config_class=None) -> Flask:
     """Application factory used by the Flask CLI, tests, and `run.py`."""
     load_dotenv()
@@ -31,6 +37,7 @@ def create_app(config_class=None) -> Flask:
     app.config.from_object(selected_config)
 
     _init_extensions(app)
+    _register_admin_views()
     _register_core_routes(app)
     _register_blueprints(app)
     _register_jwt_error_handlers()
@@ -39,12 +46,34 @@ def create_app(config_class=None) -> Flask:
 
 
 def _init_extensions(app: Flask) -> None:
+    # Import models before migrations/admin registration so metadata is available.
+    from app import models  # noqa: F401
+
     db.init_app(app)
     migrate.init_app(app, db)
     bcrypt.init_app(app)
     jwt.init_app(app)
     csrf.init_app(app)
     admin.init_app(app)
+
+
+def _register_admin_views() -> None:
+    from app.models import Feedback, Game, Guess, User
+
+    registered_models = {
+        getattr(view, "model", None)
+        for view in admin._views
+    }
+
+    for model in (User, Game, Guess, Feedback):
+        if model not in registered_models:
+            admin.add_view(
+                BasicModelView(
+                    model,
+                    db.session,
+                    endpoint=f"admin_{model.__tablename__}",
+                )
+            )
 
 
 def _register_core_routes(app: Flask) -> None:
