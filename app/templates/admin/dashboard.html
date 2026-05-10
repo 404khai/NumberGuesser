@@ -1,0 +1,47 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h2>NumberGuesser Admin Dashboard</h2>
+            <p class="text-muted">Overview of platform activity for today and overall system usage.</p>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 24px;">
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong>Total Users</strong></div>
+                <div class="panel-body">
+                    <h3>{{ total_users }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong>Games Played Today</strong></div>
+                <div class="panel-body">
+                    <h3>{{ total_games_today }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong>Wins Today</strong></div>
+                <div class="panel-body">
+                    <h3>{{ total_wins_today }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong>Feedback Count</strong></div>
+                <div class="panel-body">
+                    <h3>{{ total_feedback_count }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
