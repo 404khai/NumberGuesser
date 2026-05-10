@@ -1,9 +1,8 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, render_template
 
 contact_bp = Blueprint("contact", __name__)
 
 
-@contact_bp.get("/")
+@contact_bp.route("/", methods=["GET"], strict_slashes=False)
 def contact_index():
-    # Contact content is added later, but the public blueprint is scaffolded now.
-    return jsonify({"blueprint": "contact", "message": "Contact page arrives in Phase 8."}), 200
+    return render_template("contact.html")

@@ -1,12 +1,15 @@
 # Number Guessing Game — Senior Engineer's Build Guide
+
 ### Full-Stack Python Web Application · Phase-by-Phase with IDE Prompts
 
----
+***
 
 ## 1. ARCHITECTURAL OVERVIEW
 
 ### What You're Building
+
 A full-stack web application for a Number Guessing Game with:
+
 - User authentication (register/login with JWT)
 - Multi-difficulty gameplay (Easy / Moderate / Expert)
 - Hint system, attempt limiting, and scoring
@@ -16,18 +19,20 @@ A full-stack web application for a Number Guessing Game with:
 - Encrypted passwords, token-based auth
 
 ### Recommended Stack
-| Layer | Technology | Why |
-|---|---|---|
-| Backend | Python + Flask | Lightweight, fast to scaffold, strong ecosystem |
-| Database | SQLite (dev) → PostgreSQL (prod) | Flask-SQLAlchemy works seamlessly |
-| Auth | Flask-JWT-Extended | Token-based, secure, stateless |
-| Frontend | Jinja2 templates + TailwindCSS | Simple, server-rendered, no build step friction |
-| Password Hashing | bcrypt (via Flask-Bcrypt) | Industry standard |
-| Admin Panel | Flask-Admin | Plug-and-play |
-| ORM | SQLAlchemy | Clean models, migration-friendly |
-| Migrations | Flask-Migrate (Alembic) | Reliable schema management |
+
+| Layer            | Technology                       | Why                                             |
+| ---------------- | -------------------------------- | ----------------------------------------------- |
+| Backend          | Python + Flask                   | Lightweight, fast to scaffold, strong ecosystem |
+| Database         | SQLite (dev) → PostgreSQL (prod) | Flask-SQLAlchemy works seamlessly               |
+| Auth             | Flask-JWT-Extended               | Token-based, secure, stateless                  |
+| Frontend         | Jinja2 templates + TailwindCSS   | Simple, server-rendered, no build step friction |
+| Password Hashing | bcrypt (via Flask-Bcrypt)        | Industry standard                               |
+| Admin Panel      | Flask-Admin                      | Plug-and-play                                   |
+| ORM              | SQLAlchemy                       | Clean models, migration-friendly                |
+| Migrations       | Flask-Migrate (Alembic)          | Reliable schema management                      |
 
 ### High-Level Folder Structure
+
 ```
 number_guessing/
 ├── app/
@@ -67,7 +72,7 @@ number_guessing/
 └── .env
 ```
 
----
+***
 
 ## 2. DATA MODELS (Schema Design)
 
@@ -88,17 +93,19 @@ Feedback
 ```
 
 ### Scoring Formula
+
 `score = max(0, (max_attempts - attempts_used) * difficulty_multiplier * 100)`
 
-| Difficulty | Range | Max Attempts | Multiplier |
-|---|---|---|---|
-| Easy | 0–99 | 10 | 1x |
-| Moderate | 0–999 | 10 | 2x |
-| Expert | 0–9999 | 10 | 3x |
+| Difficulty | Range  | Max Attempts | Multiplier |
+| ---------- | ------ | ------------ | ---------- |
+| Easy       | 0–99   | 10           | 1x         |
+| Moderate   | 0–999  | 10           | 2x         |
+| Expert     | 0–9999 | 10           | 3x         |
 
----
+***
 
 ## 3. SECURITY CHECKLIST
+
 - [ ] Passwords hashed with bcrypt (never stored plaintext)
 - [ ] JWT tokens with expiry (15min access / 7day refresh)
 - [ ] CSRF protection on all forms (Flask-WTF)
@@ -107,55 +114,65 @@ Feedback
 - [ ] `.env` used for secrets, never committed to Git
 - [ ] SQL injection prevented via SQLAlchemy ORM (no raw SQL)
 
----
+***
 
 ## 4. BUILD PHASES
 
 ### Phase 1 — Project Scaffold & Configuration
+
 **Goal:** Working Flask app, DB connected, config ready, dependencies installed.
 **Deliverables:** `run.py`, `config.py`, `app/__init__.py`, `requirements.txt`, `.env`
 
 ### Phase 2 — Database Models
+
 **Goal:** All SQLAlchemy models defined and migrations working.
 **Deliverables:** `models.py`, initial migration files
 
 ### Phase 3 — Authentication (Register/Login/Logout)
+
 **Goal:** Full auth flow with bcrypt + JWT. Protected routes working.
 **Deliverables:** `auth/routes.py`, `auth/forms.py`, register/login templates
 
 ### Phase 4 — Game Engine & Core Gameplay
+
 **Goal:** Difficulty selection, random number generation, guess submission, hint feedback, attempt limiting.
 **Deliverables:** `game/logic.py`, `game/routes.py`, gameplay templates
 
 ### Phase 5 — Scoring & Leaderboard
+
 **Goal:** Score computed at game end, persisted, leaderboard rendered with rankings.
 **Deliverables:** Scoring logic in `game/logic.py`, `leaderboard/routes.py`, leaderboard template
 
 ### Phase 6 — User Profile
+
 **Goal:** Profile page showing games played, wins, best score.
 **Deliverables:** `profile/routes.py`, profile template
 
 ### Phase 7 — Admin Panel
+
 **Goal:** Admin can view/manage users, games, feedback.
 **Deliverables:** `admin/views.py`, Flask-Admin registered views
 
 ### Phase 8 — Contact & Feedback Pages
+
 **Goal:** Static contact info page, feedback form that saves to DB.
 **Deliverables:** `contact/routes.py`, `feedback/routes.py`, forms and templates
 
 ### Phase 9 — Home Page & UI Polish
+
 **Goal:** Engaging home page with game info, responsive design, TailwindCSS styling across all pages.
 **Deliverables:** `home.html`, `base.html`, complete styling pass
 
 ### Phase 10 — Testing & Validation
+
 **Goal:** Route tests, model tests, input validation edge cases covered.
 **Deliverables:** `tests/` folder with pytest tests
 
----
+***
 
 ## 5. CONTEXT-ENGINEERED IDE PROMPTS (Phase by Phase)
 
----
+***
 
 ### PHASE 1 PROMPT — Project Scaffold
 
@@ -194,7 +211,7 @@ Scaffold the full project structure. Generate:
 Produce each file clearly labelled with its path. Include inline comments explaining key decisions.
 ```
 
----
+***
 
 ### PHASE 2 PROMPT — Database Models
 
@@ -256,7 +273,7 @@ Multipliers: easy=1, moderate=2, expert=3
 Produce the full models.py and the updated app/__init__.py snippet for admin registration.
 ```
 
----
+***
 
 ### PHASE 3 PROMPT — Authentication
 
@@ -304,11 +321,11 @@ Create `app/auth/decorators.py` with:
 - `@admin_required` — checks current_user.is_admin, aborts 403 if not
 ```
 
----
+***
 
 ### PHASE 4 PROMPT — Game Engine & Gameplay
 
-```
+````
 ## Context
 Flask app "NumberGuesser" has auth working. The game Blueprint is registered at /game. Models: Game, Guess are defined. Users are authenticated via JWT cookie. current_user is available via Flask's g object (set by @login_required).
 
@@ -334,25 +351,29 @@ def generate_secret(difficulty: str) -> int: ...
 def evaluate_guess(secret: int, guess: int) -> str:  # returns 'too_high'|'too_low'|'correct'
 def calculate_score(difficulty: str, attempts_used: int, max_attempts: int) -> int: ...
 def attempts_remaining(game: Game) -> int: ...
-```
+````
 
 ## Routes (app/game/routes.py)
 
-### GET /game/select  [@login_required]
+### GET /game/select  \[@login\_required]
+
 - Show difficulty selection page
 - Show any active game warning
 
-### POST /game/start  [@login_required]
+### POST /game/start  \[@login\_required]
+
 - Accepts difficulty from form
-- Creates new Game record (secret_number generated, status=active)
+- Creates new Game record (secret\_number generated, status=active)
 - If user has an existing active game, end it (status=lost) first
 - Redirect to /game/play
 
-### GET /game/play  [@login_required]
+### GET /game/play  \[@login\_required]
+
 - Load user's active game
 - Render game UI with: attempt count, guess history for current game, difficulty label, range info
 
-### POST /game/guess  [@login_required]
+### POST /game/guess  \[@login\_required]
+
 - Accepts guess (integer) from form
 - Validate: must be integer, within range
 - Create Guess record with result
@@ -360,18 +381,22 @@ def attempts_remaining(game: Game) -> int: ...
 - If attempts exhausted: set status=lost, score=0, redirect to /game/result
 - Else: re-render /game/play with updated hints
 
-### GET /game/result  [@login_required]
+### GET /game/result  \[@login\_required]
+
 - Show last completed game: outcome, score, attempts used, secret number reveal
 
 ## UI Requirements for play.html
+
 - Show: "Attempt X of 10", current difficulty + range, guess input form
 - Show history of previous guesses with ↑ Too High / ↓ Too Low indicators
 - Show attempts remaining with visual indicator (e.g. progress bar)
 - Disable form if game is not active
+
 ```
 
 ---
 ```
+
 ### PHASE 5 PROMPT — Scoring & Leaderboard
 
 ```
@@ -399,7 +424,7 @@ Build the leaderboard system.
 - On the game result page, show: "You ranked #N on the leaderboard!" (query the user's rank dynamically)
 ```
 
----
+***
 
 ### PHASE 6 PROMPT — User Profile
 
@@ -429,7 +454,7 @@ Build the user profile page.
 - Link to edit profile (stub — just show a "coming soon" message)
 ```
 
----
+***
 
 ### PHASE 7 PROMPT — Admin Panel
 
@@ -469,7 +494,7 @@ Build a secure, functional admin panel.
 - Create a CLI command: `flask create-admin` that creates the first admin user using ADMIN_EMAIL and ADMIN_PASSWORD from .env
 ```
 
----
+***
 
 ### PHASE 8 PROMPT — Contact & Feedback
 
@@ -492,7 +517,7 @@ Build Contact and Feedback pages.
 ## Feedback Page
 ### GET /feedback — render form
 ### POST /feedback — save to DB
-- Form fields: message (Textarea, required, min 10 chars)
+- Form fields: message (Textarea, required, min 80 chars)
 - If user is logged in: link Feedback.user_id to current user
 - If anonymous: save with user_id=None
 - Flash success message after save
@@ -502,7 +527,7 @@ Build Contact and Feedback pages.
 ## Templates: contact.html, feedback.html (both extend base.html)
 ```
 
----
+***
 
 ### PHASE 9 PROMPT — Home Page & UI Polish
 
@@ -540,7 +565,7 @@ Create the home page and apply a consistent design system across all templates.
 - Active nav link highlighted
 ```
 
----
+***
 
 ### PHASE 10 PROMPT — Testing & Validation
 
@@ -593,7 +618,7 @@ Create a `tests/` folder with the following test files:
 Aim for >80% coverage. Run: `pytest --cov=app tests/`
 ```
 
----
+***
 
 ## 6. QUICK REFERENCE — Environment Setup Commands
 
@@ -624,7 +649,7 @@ flask run
 pytest --cov=app tests/ -v
 ```
 
----
+***
 
 ## 7. DEPLOYMENT NOTES (When Ready)
 
@@ -635,6 +660,6 @@ pytest --cov=app tests/ -v
 - Use HTTPS — JWT cookies must have `secure=True` in production
 - Set `JWT_COOKIE_SECURE=True` and `SESSION_COOKIE_SECURE=True` in config
 
----
+***
 
 *Guide generated for the Aptech NumberGuesser eProject · Python/Flask · 10-Phase Build*
