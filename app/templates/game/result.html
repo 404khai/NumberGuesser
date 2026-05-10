@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Game Result | NumberGuesser{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-4xl">
+    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl shadow-slate-950/40">
+        <p class="text-sm font-medium uppercase tracking-[0.3em] text-cyan-400">Game Result</p>
+        <h1 class="mt-2 text-3xl font-bold text-white">
+            {% if game.status == 'won' %}
+                You guessed it!
+            {% else %}
+                Better luck next round
+            {% endif %}
+        </h1>
+        <p class="mt-3 text-sm text-slate-400">
+            The secret number was <span class="font-semibold text-white">{{ game.secret_number }}</span>.
+        </p>
+
+        <div class="mt-8 grid gap-4 md:grid-cols-4">
+            <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                <p class="text-xs uppercase tracking-[0.25em] text-slate-500">Difficulty</p>
+                <p class="mt-2 text-xl font-bold text-white">{{ game.difficulty.title() }}</p>
+            </div>
+            <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                <p class="text-xs uppercase tracking-[0.25em] text-slate-500">Attempts Used</p>
+                <p class="mt-2 text-xl font-bold text-white">{{ game.attempts_used }}</p>
+            </div>
+            <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                <p class="text-xs uppercase tracking-[0.25em] text-slate-500">Attempts Left</p>
+                <p class="mt-2 text-xl font-bold text-white">{{ remaining_attempts }}</p>
+            </div>
+            <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                <p class="text-xs uppercase tracking-[0.25em] text-slate-500">Score</p>
+                <p class="mt-2 text-xl font-bold text-white">{{ game.score }}</p>
+            </div>
+        </div>
+
+        <div class="mt-8 rounded-xl border border-slate-800 bg-slate-950 p-5">
+            <h2 class="text-lg font-semibold text-white">Round Summary</h2>
+            <p class="mt-3 text-sm text-slate-400">
+                Range: {{ difficulty_settings.min }} to {{ difficulty_settings.max }}.
+                Multiplier: {{ difficulty_settings.multiplier }}x.
+                Final outcome:
+                <span class="font-medium {% if game.status == 'won' %}text-emerald-300{% else %}text-rose-300{% endif %}">
+                    {{ game.status.title() }}
+                </span>
+            </p>
+        </div>
+
+        <div class="mt-8 flex flex-col gap-4 sm:flex-row">
+            <a class="rounded-lg bg-cyan-500 px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-400" href="{{ url_for('game.select_game') }}">
+                Play Again
+            </a>
+            <a class="rounded-lg border border-slate-700 px-5 py-3 text-center font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white" href="{{ url_for('game.play_game') }}">
+                Back to Active Game
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
