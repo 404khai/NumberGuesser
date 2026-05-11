@@ -8,7 +8,7 @@ class FeedbackForm(FlaskForm):
         "Your Feedback",
         validators=[
             DataRequired(),
-            Length(min=10, message="Feedback must be at least 80 characters long."),
+            Length(min=10, message="Feedback must be at least 10 characters long."),
         ],
     )
     submit = SubmitField("Send Feedback")

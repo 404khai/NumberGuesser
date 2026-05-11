@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard | NumberGuesser{% endblock %}
+
+{% block styles %}
+<style>
+    .leaderboard-shell {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding-top: 60px;
+    }
+
+    .leaderboard-title {
+        margin: 0;
+        text-align: center;
+        font-size: clamp(2.3rem, 5vw, 3.4rem);
+        color: #3d2c00;
+    }
+
+    .leaderboard-subtitle {
+        margin-top: 1rem;
+        text-align: center;
+        color: var(--app-muted);
+        line-height: 1.7;
+    }
+
+    .leaderboard-filters {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+
+    .leaderboard-filter {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.7rem 1.25rem;
+        border-radius: 999px;
+        border: 2px solid var(--app-brand);
+        color: #3d2c00;
+        text-decoration: none;
+        font-weight: 700;
+        transition: background-color 180ms ease, transform 180ms ease;
+    }
+
+    .leaderboard-filter:hover {
+        background: var(--app-brand);
+        transform: translateY(-1px);
+    }
+
+    .leaderboard-filter.is-active {
+        background: var(--app-brand);
+    }
+
+    .leaderboard-card {
+        margin-top: 2rem;
+        overflow: hidden;
+    }
+
+    .leaderboard-table-wrap {
+        overflow-x: auto;
+    }
+
+    .leaderboard-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .leaderboard-table th,
+    .leaderboard-table td {
+        padding: 1rem 1.1rem;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .leaderboard-table thead th {
+        color: var(--app-muted);
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .leaderboard-table tbody tr {
+        transition: background-color 180ms ease;
+    }
+
+    .leaderboard-table tbody tr:hover {
+        background: var(--app-bg-alt);
+    }
+
+    .leaderboard-table tbody tr.rank-1 {
+        border-left: 4px solid #fbbf24;
+    }
+
+    .leaderboard-table tbody tr.rank-2 {
+        border-left: 4px solid #9ca3af;
+    }
+
+    .leaderboard-table tbody tr.rank-3 {
+        border-left: 4px solid #d97706;
+    }
+
+    .leaderboard-table tbody tr.is-current-user {
+        background: #FFECD6;
+    }
+
+    .leaderboard-rank {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 42px;
+        min-height: 42px;
+        border-radius: 999px;
+        font-family: "DynaPuff", cursive;
+        color: #000000;
+        background: rgba(255, 204, 121, 0.2);
+    }
+
+    .leaderboard-rank img {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+    }
+
+    .leaderboard-score {
+        font-family: "DynaPuff", cursive;
+        font-size: 1.3rem;
+        color: #FFCC79;
+    }
+
+    .leaderboard-date {
+        color: var(--app-muted);
+        font-size: 0.86rem;
+    }
+
+    .leaderboard-you-pill {
+        display: inline-flex;
+        align-items: center;
+        margin-left: 0.5rem;
+        padding: 0.22rem 0.55rem;
+        border-radius: 999px;
+        background: rgba(255, 204, 121, 0.24);
+        color: #3d2c00;
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    .leaderboard-empty {
+        padding: 2rem;
+        text-align: center;
+        color: var(--app-muted);
+        font-style: italic;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% set active_filter = request.args.get('difficulty') or 'all' %}
+{% set active_user = current_user if current_user is defined and current_user else g.current_user %}
+
+<section class="leaderboard-shell">
+    <h1 class="leaderboard-title">Leaderboard</h1>
+    <p class="leaderboard-subtitle">The top players across all difficulties.</p>
+
+    <div class="leaderboard-filters">
+        <a class="leaderboard-filter {{ 'is-active' if active_filter == 'all' else '' }}" href="{{ url_for('leaderboard.leaderboard_index') }}">All</a>
+        <a class="leaderboard-filter {{ 'is-active' if active_filter == 'easy' else '' }}" href="{{ url_for('leaderboard.leaderboard_index', difficulty='easy') }}">Easy</a>
+        <a class="leaderboard-filter {{ 'is-active' if active_filter == 'moderate' else '' }}" href="{{ url_for('leaderboard.leaderboard_index', difficulty='moderate') }}">Moderate</a>
+        <a class="leaderboard-filter {{ 'is-active' if active_filter == 'expert' else '' }}" href="{{ url_for('leaderboard.leaderboard_index', difficulty='expert') }}">Expert</a>
+    </div>
+
+    <div class="card leaderboard-card">
+        <div class="leaderboard-table-wrap">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Difficulty</th>
+                        <th>Score</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if entries %}
+                        {% for entry in entries %}
+                            {% set current_row = active_user and active_user.id == entry.user.id %}
+                            <tr class="rank-{{ loop.index }} {{ 'is-current-user' if current_row else '' }}">
+                                <td>
+                                    {% if loop.index == 1 %}
+                                        <span class="leaderboard-rank"><img src="{{ url_for('static', filename='images/goldMedal.png') }}" alt="Gold medal"></span>
+                                    {% elif loop.index == 2 %}
+                                        <span class="leaderboard-rank"><img src="{{ url_for('static', filename='images/silverMedal.png') }}" alt="Silver medal"></span>
+                                    {% elif loop.index == 3 %}
+                                        <span class="leaderboard-rank"><img src="{{ url_for('static', filename='images/bronzeMedal.png') }}" alt="Bronze medal"></span>
+                                    {% else %}
+                                        <span class="leaderboard-rank">{{ loop.index }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ entry.user.username }}
+                                    {% if current_row %}
+                                        <span class="leaderboard-you-pill">You</span>
+                                    {% endif %}
+                                </td>
+                                <td><span class="difficulty-pill difficulty-pill--{{ entry.game.difficulty }}">{{ entry.game.difficulty.title() }}</span></td>
+                                <td><span class="leaderboard-score">{{ entry.game.score }}</span></td>
+                                <td><span class="leaderboard-date">{{ entry.game.ended_at.strftime('%d %b %Y') if entry.game.ended_at else 'N/A' }}</span></td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td class="leaderboard-empty" colspan="5">No scores yet - start playing!</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

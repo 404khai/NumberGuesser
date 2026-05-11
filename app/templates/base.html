@@ -5,167 +5,445 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}NumberGuesser{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            navy: "#0F172A",
-                            cyan: "#06B6D4",
-                        },
-                    },
-                    boxShadow: {
-                        glow: "0 0 40px rgba(6, 182, 212, 0.16)",
-                    },
-                    fontFamily: {
-                        sans: ["Inter", "Segoe UI", "sans-serif"],
-                        mono: ["Consolas", "Monaco", "monospace"],
-                    },
-                    keyframes: {
-                        slideIn: {
-                            "0%": { opacity: "0", transform: "translateY(10px)" },
-                            "100%": { opacity: "1", transform: "translateY(0)" },
-                        },
-                    },
-                    animation: {
-                        slideIn: "slideIn 0.35s ease-out forwards",
-                    },
-                },
-            },
-        };
-    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=DynaPuff:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .glass-card {
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.92));
-            backdrop-filter: blur(14px);
+        :root {
+            --app-bg: #FFECD6;
+            --app-bg-alt: #FFF3E6;
+            --app-brand: #FFCC79;
+            --app-brand-dark: #f5bc60;
+            --app-text: #3d2c00;
+            --app-heading: #000000;
+            --app-muted: #7a5c30;
+            --app-border: rgba(255, 204, 121, 0.4);
+            --app-card-shadow: 0 4px 24px rgba(61, 44, 0, 0.07);
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: var(--app-bg);
+            color: var(--app-text);
+            font-family: "Comfortaa", cursive;
+        }
+
+        h1, h2, h3, h4, h5, h6, .font-heading {
+            font-family: "DynaPuff", cursive;
+            color: var(--app-heading);
+        }
+
+        .site-shell {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .site-main {
+            flex: 1;
+            width: min(1120px, calc(100% - 2rem));
+            margin: 0 auto;
+            padding: 2rem 0 4rem;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: var(--app-card-shadow);
+            padding: 2rem;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            border-radius: 999px;
+            text-decoration: none;
+            transition: background-color 180ms ease, color 180ms ease, transform 180ms ease, border-color 180ms ease;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+        }
+
+        .button--primary,
+        .button--secondary,
+        .button--danger {
+            font-family: "DynaPuff", cursive;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            border: none;
+        }
+
+        .button--primary {
+            background: var(--app-brand);
+            color: var(--app-text);
+        }
+
+        .button--primary:hover {
+            background: var(--app-brand-dark);
+        }
+
+        .button--secondary {
+            background: transparent;
+            border: 2px solid var(--app-brand);
+            color: var(--app-text);
+        }
+
+        .button--secondary:hover {
+            background: var(--app-brand);
+        }
+
+        .button--danger {
+            background: #fca5a5;
+            color: #7f1d1d;
+        }
+
+        .button--compact {
+            padding: 0.65rem 1.25rem;
+            font-size: 0.92rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.55rem;
+            color: var(--app-text);
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            border: 1.5px solid var(--app-brand);
+            border-radius: 0.75rem;
+            background: #ffffff;
+            color: var(--app-text);
+            padding: 0.75rem 1rem;
+            font-family: "Comfortaa", cursive;
+            transition: border-color 180ms ease, box-shadow 180ms ease;
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: #c4a882;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--app-brand);
+            box-shadow: 0 0 0 3px rgba(255, 204, 121, 0.25);
+        }
+
+        .form-input.is-error,
+        .form-textarea.is-error {
+            border-color: #fca5a5;
+        }
+
+        .field-error {
+            margin-top: 0.45rem;
+            color: #991b1b;
+            font-size: 0.84rem;
+        }
+
+        .difficulty-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            padding: 0.3rem 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .difficulty-pill--easy {
+            background: #bbf7d0;
+            color: #166534;
+        }
+
+        .difficulty-pill--moderate {
+            background: #fde68a;
+            color: #92400e;
+        }
+
+        .difficulty-pill--expert {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .site-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            width: 100%;
+            background: var(--app-bg);
+            border-bottom: 1px solid var(--app-border);
+        }
+
+        .site-navbar__inner,
+        .site-footer__inner,
+        .flash-container {
+            width: min(1120px, calc(100% - 2rem));
+            margin: 0 auto;
+        }
+
+        .site-navbar__inner {
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.75rem 0;
+        }
+
+        .site-navbar__brand img {
+            height: 40px;
+            width: auto;
+            display: block;
+        }
+
+        .site-navbar__links {
+            display: flex;
+            align-items: center;
+            gap: 1.35rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .site-navbar__link {
+            position: relative;
+            color: var(--app-brand);
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .site-navbar__link::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -0.25rem;
+            width: 100%;
+            height: 2px;
+            background: var(--app-brand);
+            transform: scaleX(0);
+            transform-origin: left center;
+            transition: transform 180ms ease;
+        }
+
+        .site-navbar__link:hover::after,
+        .site-navbar__link.active::after {
+            transform: scaleX(1);
+        }
+
+        .site-navbar__actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .site-navbar__hello {
+            color: var(--app-text);
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .site-navbar__hello--mobile {
+            margin-bottom: 0.25rem;
+        }
+
+        .site-navbar__toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.28rem;
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--app-border);
+            border-radius: 999px;
+            background: #fff7ec;
+        }
+
+        .site-navbar__toggle span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            margin: 0 auto;
+            background: var(--app-text);
+        }
+
+        .site-navbar__mobile {
+            display: none;
+            padding-bottom: 1rem;
+        }
+
+        .site-navbar__mobile.is-open {
+            display: block;
+        }
+
+        .site-navbar__mobile-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            width: min(1120px, calc(100% - 2rem));
+            margin: 0 auto;
+            padding: 1rem;
+            border-radius: 1.5rem;
+            background: #fff7ec;
+            box-shadow: var(--app-card-shadow);
+        }
+
+        .flash-container {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .flash {
+            border-radius: 1rem;
+            padding: 1rem 1.25rem;
+            font-size: 0.95rem;
+            color: var(--app-text);
+            box-shadow: var(--app-card-shadow);
+        }
+
+        .flash + .flash {
+            margin-top: 0.75rem;
+        }
+
+        .flash-success {
+            background: #d1fae5;
+        }
+
+        .flash-error {
+            background: #fee2e2;
+        }
+
+        .flash-info {
+            background: #fef9c3;
+        }
+
+        .site-footer {
+            margin-top: auto;
+            background: var(--app-text);
+            color: #ffffff;
+        }
+
+        .site-footer__inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            padding: 2rem 0 1.25rem;
+        }
+
+        .site-footer__brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .site-footer__brand img {
+            height: 32px;
+            width: auto;
+            display: block;
+        }
+
+        .site-footer__tagline {
+            color: rgba(255, 255, 255, 0.84);
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }
+
+        .site-footer__links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 0.85rem 1.35rem;
+        }
+
+        .site-footer__links a {
+            color: var(--app-brand);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .site-footer__bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 1rem 0 1.5rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.88rem;
+        }
+
+        @media (max-width: 767px) {
+            .site-main,
+            .site-navbar__inner,
+            .site-footer__inner,
+            .flash-container {
+                width: min(100%, calc(100% - 1.25rem));
+            }
+
+            .site-navbar__links,
+            .site-navbar__actions {
+                display: none;
+            }
+
+            .site-navbar__toggle {
+                display: inline-flex;
+            }
+
+            .site-footer__inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .site-footer__links {
+                justify-content: flex-start;
+            }
         }
     </style>
-    {% block head_extra %}{% endblock %}
+    {% block styles %}{% endblock %}
 </head>
-<body class="min-h-screen bg-brand-navy font-sans text-slate-100 antialiased">
-    <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(6,182,212,0.18),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.12),_transparent_28%),linear-gradient(180deg,_#020617,_#0F172A)]"></div>
-    <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-xl">
-        <nav class="mx-auto max-w-7xl px-4 py-4 sm:px-6">
-            <div class="flex items-center justify-between gap-4">
-                <a class="group inline-flex items-center gap-3" href="{{ url_for('index') }}">
-                    <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-500/15 text-xl text-cyan-300 shadow-glow">#</span>
-                    <span>
-                        <span class="block text-lg font-semibold tracking-tight text-white">NumberGuesser</span>
-                        <span class="block text-xs uppercase tracking-[0.3em] text-slate-500">Play. Score. Climb.</span>
-                    </span>
-                </a>
-
-                <button
-                    type="button"
-                    class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-3 py-2 text-slate-300 transition hover:border-slate-500 hover:text-white md:hidden"
-                    data-mobile-menu-toggle
-                    aria-label="Toggle navigation"
-                >
-                    <span class="text-lg">Menu</span>
-                </button>
-
-                <div class="hidden items-center gap-2 md:flex">
-                    <a class="rounded-xl px-3 py-2 text-sm transition {% if request.path == '/' %}bg-cyan-500/15 text-cyan-200{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}" href="{{ url_for('index') }}">Home</a>
-                    <a class="rounded-xl px-3 py-2 text-sm transition {% if request.path.startswith('/game') %}bg-cyan-500/15 text-cyan-200{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}" href="{{ url_for('game.select_game') }}">Play</a>
-                    <a class="rounded-xl px-3 py-2 text-sm transition {% if request.path.startswith('/leaderboard') %}bg-cyan-500/15 text-cyan-200{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}" href="{{ url_for('leaderboard.leaderboard_index') }}">Leaderboard</a>
-                    <a class="rounded-xl px-3 py-2 text-sm transition {% if request.path.startswith('/contact') %}bg-cyan-500/15 text-cyan-200{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}" href="{{ url_for('contact.contact_index') }}">Contact</a>
-                    <a class="rounded-xl px-3 py-2 text-sm transition {% if request.path.startswith('/feedback') %}bg-cyan-500/15 text-cyan-200{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}" href="{{ url_for('feedback.feedback_index') }}">Feedback</a>
-                    {% if g.current_user %}
-                        <a class="rounded-xl px-3 py-2 text-sm transition {% if request.path.startswith('/profile') %}bg-cyan-500/15 text-cyan-200{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}" href="{{ url_for('profile.profile_index') }}">Profile</a>
-                        <span class="ml-2 rounded-full border border-slate-700 bg-slate-900 px-3 py-2 text-xs uppercase tracking-[0.25em] text-slate-400">{{ g.current_user.username }}</span>
-                        <a class="rounded-xl bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400" href="{{ url_for('auth.logout') }}">Logout</a>
-                    {% else %}
-                        <a class="rounded-xl px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white" href="{{ url_for('auth.login') }}">Login</a>
-                        <a class="rounded-xl bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400" href="{{ url_for('auth.register') }}">Register</a>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="mt-4 hidden rounded-2xl border border-slate-800 bg-slate-950/95 p-4 md:hidden" data-mobile-menu>
-                <div class="grid gap-2">
-                    <a class="rounded-xl px-3 py-2 text-sm transition {% if request.path == '/' %}bg-cyan-500/15 text-cyan-200{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}" href="{{ url_for('index') }}">Home</a>
-                    <a class="rounded-xl px-3 py-2 text-sm transition {% if request.path.startswith('/game') %}bg-cyan-500/15 text-cyan-200{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}" href="{{ url_for('game.select_game') }}">Play</a>
-                    <a class="rounded-xl px-3 py-2 text-sm transition {% if request.path.startswith('/leaderboard') %}bg-cyan-500/15 text-cyan-200{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}" href="{{ url_for('leaderboard.leaderboard_index') }}">Leaderboard</a>
-                    <a class="rounded-xl px-3 py-2 text-sm transition {% if request.path.startswith('/contact') %}bg-cyan-500/15 text-cyan-200{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}" href="{{ url_for('contact.contact_index') }}">Contact</a>
-                    <a class="rounded-xl px-3 py-2 text-sm transition {% if request.path.startswith('/feedback') %}bg-cyan-500/15 text-cyan-200{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}" href="{{ url_for('feedback.feedback_index') }}">Feedback</a>
-                    {% if g.current_user %}
-                        <a class="rounded-xl px-3 py-2 text-sm transition {% if request.path.startswith('/profile') %}bg-cyan-500/15 text-cyan-200{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}" href="{{ url_for('profile.profile_index') }}">Profile</a>
-                        <div class="rounded-xl border border-slate-800 px-3 py-2 text-sm text-slate-400">Signed in as {{ g.current_user.username }}</div>
-                        <a class="rounded-xl bg-cyan-500 px-3 py-2 text-center text-sm font-semibold text-slate-950 transition hover:bg-cyan-400" href="{{ url_for('auth.logout') }}">Logout</a>
-                    {% else %}
-                        <a class="rounded-xl px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white" href="{{ url_for('auth.login') }}">Login</a>
-                        <a class="rounded-xl bg-cyan-500 px-3 py-2 text-center text-sm font-semibold text-slate-950 transition hover:bg-cyan-400" href="{{ url_for('auth.register') }}">Register</a>
-                    {% endif %}
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
+<body>
+    <div class="site-shell">
+        {% include 'partials/navbar.html' %}
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="mb-8 space-y-3">
+                <div class="flash-container">
                     {% for category, message in messages %}
-                        <div
-                            class="glass-card flex items-start justify-between gap-4 rounded-2xl border px-4 py-4 text-sm shadow-lg
-                            {% if category == 'success' %}
-                                border-emerald-500/35 text-emerald-100
-                            {% elif category == 'error' %}
-                                border-rose-500/35 text-rose-100
-                            {% else %}
-                                border-cyan-500/35 text-cyan-100
-                            {% endif %}"
-                            data-flash-alert
-                        >
-                            <div class="pr-4">{{ message }}</div>
-                            <button type="button" class="rounded-lg px-2 py-1 text-xs uppercase tracking-[0.25em] text-slate-400 transition hover:bg-slate-800 hover:text-white" data-dismiss-alert>
-                                Close
-                            </button>
-                        </div>
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
                     {% endfor %}
                 </div>
             {% endif %}
         {% endwith %}
 
-        {% block content %}{% endblock %}
-    </main>
+        <main class="site-main">
+            {% block content %}{% endblock %}
+        </main>
 
-    <footer class="border-t border-slate-800/80 bg-slate-950/80">
-        <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-slate-400 sm:px-6 md:flex-row md:items-center md:justify-between">
-            <div>
-                <p class="font-medium text-slate-200">NumberGuesser</p>
-                <p class="mt-1">Can you guess the number before the attempts run out?</p>
+        <footer class="site-footer">
+            <div class="site-footer__inner">
+                <div class="site-footer__brand">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NumberGuesser logo">
+                    <p class="site-footer__tagline">Can you guess the number before the attempts run out?</p>
+                </div>
+                <nav class="site-footer__links" aria-label="Footer">
+                    <a href="{{ url_for('index') }}">Home</a>
+                    <a href="{{ url_for('leaderboard.leaderboard_index') }}">Leaderboard</a>
+                    <a href="{{ url_for('contact.contact_index') }}">Contact</a>
+                    <a href="{{ url_for('feedback.feedback_index') }}">Feedback</a>
+                </nav>
             </div>
-            <div class="flex flex-wrap gap-4">
-                <a class="transition hover:text-white" href="{{ url_for('index') }}">Home</a>
-                <a class="transition hover:text-white" href="{{ url_for('leaderboard.leaderboard_index') }}">Leaderboard</a>
-                <a class="transition hover:text-white" href="{{ url_for('contact.contact_index') }}">Contact</a>
-                <a class="transition hover:text-white" href="{{ url_for('feedback.feedback_index') }}">Feedback</a>
+            <div class="site-footer__bottom">
+                &copy; 2025 NumberGuesser &middot; Built with Flask
             </div>
-        </div>
-    </footer>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const toggle = document.querySelector("[data-mobile-menu-toggle]");
-            const menu = document.querySelector("[data-mobile-menu]");
-            if (toggle && menu) {
-                toggle.addEventListener("click", function () {
-                    menu.classList.toggle("hidden");
-                });
-            }
-
-            document.querySelectorAll("[data-dismiss-alert]").forEach(function (button) {
-                button.addEventListener("click", function () {
-                    const alert = button.closest("[data-flash-alert]");
-                    if (alert) {
-                        alert.remove();
-                    }
-                });
-            });
-        });
-    </script>
+        </footer>
+    </div>
     {% block scripts %}{% endblock %}
 </body>
 </html>

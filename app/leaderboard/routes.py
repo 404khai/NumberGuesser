@@ -67,10 +67,12 @@ def leaderboard_index():
         )
 
     return render_template(
-        "leaderboard/leaderboard.html",
+        "leaderboard.html",
         entries=entries,
         difficulty_config=DIFFICULTY_CONFIG,
         selected_difficulty=selected_difficulty,
+        current_difficulty=None if selected_difficulty == "all" else selected_difficulty,
+        current_user=getattr(g, "current_user", None),
     )
 
 
