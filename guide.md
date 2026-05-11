@@ -500,7 +500,7 @@ Build a secure, functional admin panel.
 
 ```
 ## Context
-NumberGuesser Flask app. User model exists. Auth optional (feedback can be anonymous).
+NumberGuesser Flask app. User model exists. Auth required. Feedback is always linked to the logged-in user.
 
 ## Task
 Build Contact and Feedback pages.
@@ -517,11 +517,13 @@ Build Contact and Feedback pages.
 ## Feedback Page
 ### GET /feedback — render form
 ### POST /feedback — save to DB
-- Form fields: message (Textarea, required, min 80 chars)
-- If user is logged in: link Feedback.user_id to current user
-- If anonymous: save with user_id=None
-- Flash success message after save
-- Redirect back to /feedback (PRG pattern)
+- Decorate route with @login_required
+- Always set Feedback.user_id = current_user.id
+- Remove the nullable user_id logic entirely
+
+This also means you can make user_id non-nullable in the Feedback model, which is cleaner schema design. If you've already run the migration with it nullable, add a quick migration to tighten that constraint:
+bashflask db migrate -m "make feedback user_id non-nullable"
+flask db upgrade
 
 ## File: app/feedback/routes.py, app/feedback/forms.py
 ## Templates: contact.html, feedback.html (both extend base.html)
