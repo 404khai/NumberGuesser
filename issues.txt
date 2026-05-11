@@ -1,0 +1,11 @@
+You are a Senior Software Engineer, analyze the following issues and profer fixes
+- noticed that the guess history sidebar is not showing all my guesses
+- after a while, I went from home to - http://127.0.0.1:5000/leaderboard/ and saw a black screen with 
+{
+  "error": "token_expired"
+}
+in the console I saw GET http://127.0.0.1:5000/leaderboard/ 401 (UNAUTHORIZED)
+Every page is hitting a 401 
+
+- You already have an active moderate game in progress. Starting a new game will mark that run as lost. but no way to continue the previous game
+- When I reload the page as I am playing, it brings up a popup. The page that you're looking for used information that you entered. Returning to that page might cause any action you took to be repeated. Do you want to continue?
