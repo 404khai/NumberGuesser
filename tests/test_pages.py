@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
-from app.models import Feedback
+from app import db
+from app.models import Feedback, Guess
 
 
 def test_home_page_renders_leaderboard_preview(client, create_user, create_game):
@@ -42,6 +43,29 @@ def test_feedback_requires_login(client):
 
     assert response.status_code == 302
     assert "/auth/login" in response.headers["Location"]
+
+
+def test_public_pages_ignore_stale_auth_cookie(client):
+    client.set_cookie("access_token_cookie", "expired-or-invalid-token")
+
+    home_response = client.get("/")
+    leaderboard_response = client.get("/leaderboard/")
+
+    assert home_response.status_code == 200
+    assert leaderboard_response.status_code == 200
+
+
+def test_protected_pages_clear_stale_auth_cookie(client):
+    client.set_cookie("access_token_cookie", "expired-or-invalid-token")
+
+    response = client.get("/game/select", follow_redirects=False)
+
+    assert response.status_code == 302
+    assert "/auth/login" in response.headers["Location"]
+    assert any(
+        "access_token_cookie=;" in cookie
+        for cookie in response.headers.getlist("Set-Cookie")
+    )
 
 
 def test_feedback_submission_saves_logged_in_user(authenticated_client, app, test_user):
@@ -98,3 +122,26 @@ def test_profile_requires_login(client):
 
     assert response.status_code == 302
     assert "/auth/login" in response.headers["Location"]
+
+
+def test_play_page_shows_complete_guess_history(authenticated_client, app, create_game, test_user):
+    game = create_game(user=test_user, difficulty="easy", secret_number=50)
+
+    with app.app_context():
+        db.session.add_all(
+            [
+                Guess(game_id=game.id, guess_value=10, result="too_low"),
+                Guess(game_id=game.id, guess_value=70, result="too_high"),
+                Guess(game_id=game.id, guess_value=50, result="correct"),
+            ]
+        )
+        game.attempts_used = 3
+        db.session.commit()
+
+    response = authenticated_client.get("/game/play")
+
+    assert response.status_code == 200
+    assert b"3 total" in response.data
+    assert b"10" in response.data
+    assert b"70" in response.data
+    assert b"50" in response.data

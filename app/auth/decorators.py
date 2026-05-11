@@ -1,25 +1,45 @@
 from functools import wraps
 
-from flask import abort, flash, g, redirect, url_for
-from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
-from flask_jwt_extended.exceptions import JWTExtendedException
+from flask import abort, current_app, flash, g, redirect, request, url_for
+from flask_jwt_extended import decode_token, unset_jwt_cookies
 
 from app import db
 from app.models import User
 
 
+def get_user_from_request_cookie() -> User | None:
+    token_cookie_name = current_app.config.get(
+        "JWT_ACCESS_COOKIE_NAME",
+        "access_token_cookie",
+    )
+    encoded_token = request.cookies.get(token_cookie_name)
+    if not encoded_token:
+        return None
+
+    try:
+        decoded_token = decode_token(encoded_token)
+        identity_claim = current_app.config.get("JWT_IDENTITY_CLAIM", "sub")
+        identity = decoded_token.get(identity_claim)
+        if identity is None:
+            return None
+        return db.session.get(User, int(identity))
+    except Exception:
+        return None
+
+
+def _redirect_to_login():
+    flash("Please log in to continue.", "error")
+    response = redirect(url_for("auth.login"))
+    unset_jwt_cookies(response)
+    return response
+
+
 def login_required(view_func):
     @wraps(view_func)
     def wrapped_view(*args, **kwargs):
-        try:
-            verify_jwt_in_request(locations=["cookies"])
-            identity = get_jwt_identity()
-            current_user = db.session.get(User, int(identity))
-            if current_user is None:
-                raise JWTExtendedException("Authenticated user no longer exists.")
-        except (JWTExtendedException, ValueError, TypeError):
-            flash("Please log in to continue.", "error")
-            return redirect(url_for("auth.login"))
+        current_user = get_user_from_request_cookie()
+        if current_user is None:
+            return _redirect_to_login()
 
         g.current_user = current_user
         return view_func(*args, **kwargs)

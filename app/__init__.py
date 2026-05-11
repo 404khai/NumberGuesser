@@ -1,11 +1,10 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template
+from flask import Flask, g, jsonify, render_template
 from flask_admin import Admin
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager, get_jwt_identity, verify_jwt_in_request
-from flask_jwt_extended.exceptions import JWTExtendedException
+from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
@@ -70,18 +69,10 @@ def _register_admin(app: Flask) -> None:
 def _register_core_routes(app: Flask) -> None:
     @app.before_request
     def load_current_user():
-        from flask import g
-        from app.models import User
+        # Public pages should stay public even when a stale JWT cookie exists.
+        from app.auth.decorators import get_user_from_request_cookie
 
-        g.current_user = None
-
-        try:
-            verify_jwt_in_request(optional=True, locations=["cookies"])
-            identity = get_jwt_identity()
-            if identity is not None:
-                g.current_user = db.session.get(User, int(identity))
-        except (JWTExtendedException, ValueError, TypeError):
-            g.current_user = None
+        g.current_user = get_user_from_request_cookie()
 
     @app.get("/health")
     def health_check():
