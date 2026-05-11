@@ -25,6 +25,8 @@ The project is designed to demonstrate practical full-stack Flask architecture r
 
 The frontend uses Jinja2 templates and TailwindCSS via CDN, which keeps deployment simple because Flask serves both the application logic and the HTML views. There is no separate JavaScript build pipeline, frontend framework, or client-side dev server required to run the application.
 
+Static UI assets live in `app/static/images/`, including the site logo, leaderboard medal images, and homepage artwork used by the refreshed interface.
+
 ### Features
 - User registration and login with JWT cookie authentication and bcrypt password hashing
 - Three difficulty levels: Easy (`0-99`), Moderate (`0-999`), Expert (`0-9999`)
@@ -83,13 +85,15 @@ NumberGuesser/                          # Project root
 │   │   ├── admin/                      # Admin dashboard template
 │   │   ├── auth/                       # Login and registration templates
 │   │   ├── game/                       # Difficulty selection, play, and result templates
-│   │   ├── leaderboard/                # Leaderboard template
-│   │   ├── profile/                    # Profile template
+│   │   ├── partials/                   # Reusable shared template fragments
 │   │   ├── base.html                   # Shared layout, navigation, flashes, and footer
 │   │   ├── contact.html                # Public contact page
 │   │   ├── feedback.html               # Feedback submission page
-│   │   └── home.html                   # Landing page
-│   └── static/                         # Optional location for custom static assets if added later
+│   │   ├── home.html                   # Landing page
+│   │   ├── leaderboard.html            # Leaderboard page
+│   │   └── profile.html                # Profile page
+│   └── static/                         # Flask-served static assets
+│       └── images/                     # Shared UI images (logo, medals, homepage art)
 ├── migrations/                         # Alembic migration environment and version history
 │   └── versions/                       # Generated migration scripts
 ├── tests/                              # Pytest suite and shared fixtures
