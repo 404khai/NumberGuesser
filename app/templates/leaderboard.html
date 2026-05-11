@@ -78,8 +78,10 @@
     .leaderboard-table thead th {
         color: var(--app-muted);
         font-size: 0.82rem;
+        font-weight: bold;
         text-transform: uppercase;
         letter-spacing: 0.08em;
+        background: rgba(255, 203, 147, 0.8);
     }
 
     .leaderboard-table tbody tr {
@@ -171,7 +173,7 @@
         <a class="leaderboard-filter {{ 'is-active' if active_filter == 'expert' else '' }}" href="{{ url_for('leaderboard.leaderboard_index', difficulty='expert') }}">Expert</a>
     </div>
 
-    <div class="card leaderboard-card">
+    <div class="card2 leaderboard-card">
         <div class="leaderboard-table-wrap">
             <table class="leaderboard-table">
                 <thead>

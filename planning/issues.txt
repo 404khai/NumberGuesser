@@ -1,6 +1,0 @@
-- You already have an active "difficulty_lvl" game in progress. Starting a new game will mark that run as lost. but no way to continue the previous game. add a Continue button
-- When I reload the page as I am playing, it brings up a popup. The page that you're looking for used information that you entered. Returning to that page might cause any action you took to be repeated. Do you want to continue?...it uses my last used guess and takes up an attempt
-- Password checks (1 capital letter, number, special character, 8 minimum )
-- eye icon, on the register and login pages password fields to view password
-- I can't log into my admin account, it says invalid credentials, even though it is my admin account in the database
-- reduce notification pill width to have auto-width, depending on the length of the notification. It should appear above the navbar, it should have an X button to close, it should fade away after 3 secs.

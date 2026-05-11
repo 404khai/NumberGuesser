@@ -268,10 +268,10 @@
         text-align: left;
         color: var(--app-muted);
         font-size: 0.82rem;
-        font-weight: 700;
+        font-weight: bold;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        background: rgba(255, 243, 230, 0.8);
+        background: rgba(255, 203, 147, 0.8);
     }
 
     .leaderboard-table tbody td {
@@ -321,6 +321,10 @@
         font-family: "DynaPuff", cursive;
         font-size: 1.35rem;
         color: #3d2c00;
+    }
+
+    .leaderboard-difficulty {
+        white-space: nowrap;
     }
 
     .leaderboard-cta {
@@ -514,7 +518,11 @@
                                             {% endif %}
                                         </td>
                                         <td>{{ user.username if user else "Unknown Player" }}</td>
-                                        <td>{{ game.difficulty.title() }}</td>
+                                        <td>
+                                            <span class="difficulty-pill difficulty-pill--{{ game.difficulty }} leaderboard-difficulty">
+                                                {{ game.difficulty.title() }}
+                                            </span>
+                                        </td>
                                         <td><span class="leaderboard-score">{{ game.score }}</span></td>
                                     </tr>
                                 {% endfor %}
