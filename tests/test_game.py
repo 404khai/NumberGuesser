@@ -45,8 +45,8 @@ def test_guess_too_low(authenticated_client, app, create_game, test_user):
         follow_redirects=False,
     )
 
-    assert response.status_code == 200
-    assert b"too low" in response.data.lower()
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/game/play")
 
     with app.app_context():
         game = db.session.get(Game, game.id)
@@ -65,14 +65,23 @@ def test_guess_too_high(authenticated_client, app, create_game, test_user):
         follow_redirects=False,
     )
 
-    assert response.status_code == 200
-    assert b"too high" in response.data.lower()
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/game/play")
 
     with app.app_context():
         game = db.session.get(Game, game.id)
         assert game.attempts_used == 1
         guess = Guess.query.filter_by(game_id=game.id).one()
         assert guess.result == "too_high"
+
+
+def test_play_select_shows_continue_button(authenticated_client, create_game, test_user):
+    create_game(user=test_user, secret_number=50)
+
+    response = authenticated_client.get("/game/select")
+
+    assert response.status_code == 200
+    assert b"Continue Current Game" in response.data
 
 
 def test_guess_correct_sets_won(authenticated_client, app, create_game, test_user):

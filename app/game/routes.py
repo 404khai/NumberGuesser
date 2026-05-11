@@ -128,6 +128,7 @@ def submit_guess():
             active_game.max_attempts,
         )
         db.session.commit()
+        flash("Correct guess. You won!", "success")
         return redirect(url_for("game.game_result"))
 
     if active_game.attempts_used >= active_game.max_attempts:
@@ -135,10 +136,15 @@ def submit_guess():
         active_game.ended_at = datetime.utcnow()
         active_game.score = 0
         db.session.commit()
+        flash(
+            f"Out of attempts. The number was {active_game.secret_number}.",
+            "info",
+        )
         return redirect(url_for("game.game_result"))
 
     db.session.commit()
-    return _render_play_state(active_game)
+    flash(_build_last_feedback(active_game), "info")
+    return redirect(url_for("game.play_game"))
 
 
 @game_bp.get("/result")

@@ -33,6 +33,13 @@
         box-shadow: var(--app-card-shadow);
     }
 
+    .select-warning__actions {
+        margin-top: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
     .difficulty-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -106,6 +113,9 @@
     {% if active_game %}
         <div class="select-warning">
             &#9888;&#65039; You have an active game in progress. Starting a new game will forfeit it.
+            <div class="select-warning__actions">
+                <a class="button button--primary button--compact" href="{{ url_for('game.play_game') }}">Continue Current Game</a>
+            </div>
         </div>
     {% endif %}
 

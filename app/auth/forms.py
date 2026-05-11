@@ -1,3 +1,5 @@
+import re
+
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, SubmitField
 from wtforms.validators import ValidationError
@@ -48,10 +50,19 @@ class RegistrationForm(FlaskForm):
         if existing_user:
             raise ValidationError("That email is already registered.")
 
+    def validate_password(self, field) -> None:
+        password = field.data or ""
+        if not re.search(r"[A-Z]", password):
+            raise ValidationError("Password must include at least one uppercase letter.")
+        if not re.search(r"\d", password):
+            raise ValidationError("Password must include at least one number.")
+        if not re.search(r"[^A-Za-z0-9]", password):
+            raise ValidationError("Password must include at least one special character.")
+
 
 class LoginForm(FlaskForm):
     username = StringField(
-        "Username",
+        "Username or Email",
         validators=[
             DataRequired(),
             Length(min=3, max=80),

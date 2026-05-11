@@ -52,6 +52,48 @@
         font-weight: 700;
         text-decoration: none;
     }
+
+    .password-field {
+        position: relative;
+    }
+
+    .password-field .form-input {
+        padding-right: 3.25rem;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 2.1rem;
+        height: 2.1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--app-muted);
+        cursor: pointer;
+    }
+
+    .password-toggle:hover {
+        background: rgba(255, 204, 121, 0.18);
+        color: var(--app-text);
+    }
+
+    .password-toggle svg {
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+
+    .auth-help {
+        margin-top: 0.45rem;
+        color: var(--app-muted);
+        font-size: 0.82rem;
+        line-height: 1.5;
+    }
 </style>
 {% endblock %}
 
@@ -83,7 +125,21 @@
 
             <div>
                 <label class="form-label" for="{{ form.password.id }}">Password</label>
-                {{ form.password(class="form-input" ~ (" is-error" if form.password.errors else ""), placeholder="Enter your password") }}
+                <div class="password-field">
+                    {{ form.password(class="form-input" ~ (" is-error" if form.password.errors else ""), placeholder="Enter your password", data_password_input="true") }}
+                    <button
+                        class="password-toggle"
+                        type="button"
+                        aria-label="Show password"
+                        data-password-toggle
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6Z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <p class="auth-help">Use at least 8 characters with 1 uppercase letter, 1 number, and 1 special character.</p>
                 {% for error in form.password.errors %}
                     <p class="field-error">{{ error }}</p>
                 {% endfor %}
@@ -91,7 +147,20 @@
 
             <div>
                 <label class="form-label" for="{{ form.confirm_password.id }}">Confirm Password</label>
-                {{ form.confirm_password(class="form-input" ~ (" is-error" if form.confirm_password.errors else ""), placeholder="Confirm your password") }}
+                <div class="password-field">
+                    {{ form.confirm_password(class="form-input" ~ (" is-error" if form.confirm_password.errors else ""), placeholder="Confirm your password", data_password_input="true") }}
+                    <button
+                        class="password-toggle"
+                        type="button"
+                        aria-label="Show password"
+                        data-password-toggle
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6Z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
                 {% for error in form.confirm_password.errors %}
                     <p class="field-error">{{ error }}</p>
                 {% endfor %}
@@ -109,4 +178,20 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("[data-password-toggle]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                const input = button.parentElement.querySelector("[data-password-input], input");
+                if (!input) {
+                    return;
+                }
+
+                const showingPassword = input.type === "text";
+                input.type = showingPassword ? "password" : "text";
+                button.setAttribute("aria-label", showingPassword ? "Show password" : "Hide password");
+            });
+        });
+    });
+</script>
 {% endblock %}

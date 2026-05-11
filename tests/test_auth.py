@@ -8,8 +8,8 @@ def test_register_success(client, app):
         data={
             "username": "newplayer",
             "email": "newplayer@example.com",
-            "password": "password123",
-            "confirm_password": "password123",
+            "password": "Password123!",
+            "confirm_password": "Password123!",
         },
         follow_redirects=False,
     )
@@ -21,7 +21,7 @@ def test_register_success(client, app):
         user = User.query.filter_by(username="newplayer").first()
         assert user is not None
         assert user.email == "newplayer@example.com"
-        assert user.check_password("password123")
+        assert user.check_password("Password123!")
 
 
 def test_register_duplicate_username(client, app, test_user):
@@ -30,8 +30,8 @@ def test_register_duplicate_username(client, app, test_user):
         data={
             "username": test_user.username,
             "email": "another@example.com",
-            "password": "password123",
-            "confirm_password": "password123",
+            "password": "Password123!",
+            "confirm_password": "Password123!",
         },
         follow_redirects=True,
     )
@@ -49,8 +49,8 @@ def test_register_password_mismatch(client, app):
         data={
             "username": "mismatch",
             "email": "mismatch@example.com",
-            "password": "password123",
-            "confirm_password": "password124",
+            "password": "Password123!",
+            "confirm_password": "Password124!",
         },
         follow_redirects=True,
     )
@@ -60,6 +60,25 @@ def test_register_password_mismatch(client, app):
 
     with app.app_context():
         assert User.query.filter_by(username="mismatch").first() is None
+
+
+def test_register_requires_strong_password(client, app):
+    response = client.post(
+        "/auth/register",
+        data={
+            "username": "weakpass",
+            "email": "weakpass@example.com",
+            "password": "password123",
+            "confirm_password": "password123",
+        },
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    assert b"Password must include at least one uppercase letter." in response.data
+
+    with app.app_context():
+        assert User.query.filter_by(username="weakpass").first() is None
 
 
 def test_login_success(client, test_user):
@@ -73,6 +92,17 @@ def test_login_success(client, test_user):
     assert response.headers["Location"].endswith("/game/select")
     cookies = response.headers.getlist("Set-Cookie")
     assert any("access_token_cookie=" in cookie for cookie in cookies)
+
+
+def test_login_success_with_email(client, test_user):
+    response = client.post(
+        "/auth/login",
+        data={"username": test_user.email, "password": "password123"},
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/game/select")
 
 
 def test_login_wrong_password(client, test_user):

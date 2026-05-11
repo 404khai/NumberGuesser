@@ -1,5 +1,6 @@
 from flask import Blueprint, flash, make_response, redirect, render_template, url_for
 from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
+from sqlalchemy import or_
 
 from app import db
 from app.auth.forms import LoginForm, RegistrationForm
@@ -36,8 +37,13 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        username = form.username.data.strip()
-        user = User.query.filter_by(username=username).first()
+        identifier = form.username.data.strip()
+        user = User.query.filter(
+            or_(
+                User.username == identifier,
+                User.email == identifier.lower(),
+            )
+        ).first()
 
         if user and user.check_password(form.password.data):
             access_token = create_access_token(identity=str(user.id))
