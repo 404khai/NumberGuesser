@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_admin import Admin
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, get_jwt_identity, verify_jwt_in_request
@@ -89,12 +89,23 @@ def _register_core_routes(app: Flask) -> None:
 
     @app.get("/")
     def index():
-        return jsonify(
-            {
-                "app": "NumberGuesser",
-                "message": "Project scaffold is ready.",
-            }
-        ), 200
+        from app.game.logic import DIFFICULTY_CONFIG
+        from app.models import Game, User
+
+        leaderboard_preview = (
+            db.session.query(Game, User)
+            .join(User, User.id == Game.user_id)
+            .filter(Game.status == "won")
+            .order_by(Game.score.desc(), Game.ended_at.asc(), Game.id.asc())
+            .limit(5)
+            .all()
+        )
+
+        return render_template(
+            "home.html",
+            difficulty_config=DIFFICULTY_CONFIG,
+            leaderboard_preview=leaderboard_preview,
+        )
 
 
 def _register_blueprints(app: Flask) -> None:

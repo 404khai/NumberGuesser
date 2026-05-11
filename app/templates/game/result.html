@@ -4,9 +4,9 @@
 
 {% block content %}
 <section class="mx-auto max-w-4xl">
-    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl shadow-slate-950/40">
+    <div class="glass-card rounded-[2rem] border border-slate-800 p-8 shadow-xl shadow-slate-950/40 sm:p-10">
         <p class="text-sm font-medium uppercase tracking-[0.3em] text-cyan-400">Game Result</p>
-        <h1 class="mt-2 text-3xl font-bold text-white">
+        <h1 class="mt-2 font-mono text-3xl font-bold text-white">
             {% if game.status == 'won' %}
                 You guessed it!
             {% else %}
@@ -18,25 +18,25 @@
         </p>
 
         <div class="mt-8 grid gap-4 md:grid-cols-4">
-            <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+            <div class="rounded-2xl border border-slate-800 bg-slate-950/85 p-4">
                 <p class="text-xs uppercase tracking-[0.25em] text-slate-500">Difficulty</p>
-                <p class="mt-2 text-xl font-bold text-white">{{ game.difficulty.title() }}</p>
+                <p class="mt-2 font-mono text-xl font-bold text-white">{{ game.difficulty.title() }}</p>
             </div>
-            <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+            <div class="rounded-2xl border border-slate-800 bg-slate-950/85 p-4">
                 <p class="text-xs uppercase tracking-[0.25em] text-slate-500">Attempts Used</p>
-                <p class="mt-2 text-xl font-bold text-white">{{ game.attempts_used }}</p>
+                <p class="mt-2 font-mono text-xl font-bold text-white">{{ game.attempts_used }}</p>
             </div>
-            <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+            <div class="rounded-2xl border border-slate-800 bg-slate-950/85 p-4">
                 <p class="text-xs uppercase tracking-[0.25em] text-slate-500">Attempts Left</p>
-                <p class="mt-2 text-xl font-bold text-white">{{ remaining_attempts }}</p>
+                <p class="mt-2 font-mono text-xl font-bold text-white">{{ remaining_attempts }}</p>
             </div>
-            <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+            <div class="rounded-2xl border border-slate-800 bg-slate-950/85 p-4">
                 <p class="text-xs uppercase tracking-[0.25em] text-slate-500">Score</p>
-                <p class="mt-2 text-xl font-bold text-white">{{ game.score }}</p>
+                <p class="mt-2 font-mono text-xl font-bold text-white">{{ game.score }}</p>
             </div>
         </div>
 
-        <div class="mt-8 rounded-xl border border-slate-800 bg-slate-950 p-5">
+        <div class="mt-8 rounded-3xl border border-slate-800 bg-slate-950/85 p-6">
             <h2 class="text-lg font-semibold text-white">Round Summary</h2>
             <p class="mt-3 text-sm text-slate-400">
                 Range: {{ difficulty_settings.min }} to {{ difficulty_settings.max }}.
@@ -54,13 +54,13 @@
         </div>
 
         <div class="mt-8 flex flex-col gap-4 sm:flex-row">
-            <a class="rounded-lg bg-cyan-500 px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-400" href="{{ url_for('game.select_game') }}">
+            <a class="rounded-2xl bg-cyan-500 px-5 py-3 text-center font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-400" href="{{ url_for('game.select_game') }}">
                 Play Again
             </a>
-            <a class="rounded-lg border border-cyan-500/40 px-5 py-3 text-center font-semibold text-cyan-200 transition hover:border-cyan-400 hover:text-cyan-100" href="{{ url_for('leaderboard.leaderboard_index') }}">
+            <a class="rounded-2xl border border-cyan-500/40 px-5 py-3 text-center font-semibold text-cyan-200 transition hover:-translate-y-0.5 hover:border-cyan-400 hover:text-cyan-100" href="{{ url_for('leaderboard.leaderboard_index') }}">
                 View Leaderboard
             </a>
-            <a class="rounded-lg border border-slate-700 px-5 py-3 text-center font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white" href="{{ url_for('game.play_game') }}">
+            <a class="rounded-2xl border border-slate-700 px-5 py-3 text-center font-semibold text-slate-200 transition hover:-translate-y-0.5 hover:border-slate-500 hover:text-white" href="{{ url_for('game.play_game') }}">
                 Back to Active Game
             </a>
         </div>

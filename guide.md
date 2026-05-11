@@ -521,8 +521,9 @@ Build Contact and Feedback pages.
 - Always set Feedback.user_id = current_user.id
 - Remove the nullable user_id logic entirely
 
-This also means you can make user_id non-nullable in the Feedback model, which is cleaner schema design. If you've already run the migration with it nullable, add a quick migration to tighten that constraint:
-bashflask db migrate -m "make feedback user_id non-nullable"
+## This also means you can make user_id non-nullable in the Feedback model, which is cleaner schema design. If you've already run the migration with it nullable, add a quick migration to tighten that constraint:
+ ```bash
+flask db migrate -m "make feedback user_id non-nullable"
 flask db upgrade
 
 ## File: app/feedback/routes.py, app/feedback/forms.py
