@@ -1,6 +1,7 @@
 from flask import Blueprint, flash, g, redirect, render_template, url_for
 
 from app import db
+from app.auth.decorators import login_required
 from app.feedback.forms import FeedbackForm
 from app.models import Feedback
 
@@ -8,12 +9,13 @@ feedback_bp = Blueprint("feedback", __name__)
 
 
 @feedback_bp.route("/", methods=["GET", "POST"], strict_slashes=False)
+@login_required
 def feedback_index():
     form = FeedbackForm()
 
     if form.validate_on_submit():
         feedback = Feedback(
-            user_id=getattr(getattr(g, "current_user", None), "id", None),
+            user_id=g.current_user.id,
             message=form.message.data.strip(),
         )
         db.session.add(feedback)
