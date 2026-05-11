@@ -76,6 +76,8 @@ def play_game():
     return render_template(
         "game/play.html",
         game=active_game,
+        guesses=list(reversed(active_game.guesses)),
+        config=DIFFICULTY_CONFIG[active_game.difficulty],
         difficulty_settings=DIFFICULTY_CONFIG[active_game.difficulty],
         remaining_attempts=attempts_remaining(active_game),
         guess_history=active_game.guesses,
@@ -191,6 +193,8 @@ def _render_play_state(game: Game):
     return render_template(
         "game/play.html",
         game=game,
+        guesses=list(reversed(game.guesses)),
+        config=DIFFICULTY_CONFIG[game.difficulty],
         difficulty_settings=DIFFICULTY_CONFIG[game.difficulty],
         remaining_attempts=attempts_remaining(game),
         guess_history=game.guesses,

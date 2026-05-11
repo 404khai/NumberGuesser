@@ -2,47 +2,155 @@
 
 {% block title %}Choose Difficulty | NumberGuesser{% endblock %}
 
+{% block styles %}
+<style>
+    .select-shell {
+        padding-top: 80px;
+        text-align: center;
+    }
+
+    .select-title {
+        font-size: clamp(2.3rem, 5vw, 3.5rem);
+        color: #3d2c00;
+        margin: 0;
+    }
+
+    .select-subtitle {
+        max-width: 720px;
+        margin: 1rem auto 0;
+        color: var(--app-muted);
+        line-height: 1.8;
+    }
+
+    .select-warning {
+        max-width: 900px;
+        margin: 2rem auto 0;
+        padding: 1rem 1.25rem;
+        border-radius: 1rem;
+        background: #fef3c7;
+        color: #92400e;
+        text-align: left;
+        box-shadow: var(--app-card-shadow);
+    }
+
+    .difficulty-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.5rem;
+        max-width: 960px;
+        margin: 2.25rem auto 0;
+        justify-items: center;
+    }
+
+    .difficulty-card {
+        width: 100%;
+        max-width: 300px;
+        background: #ffffff;
+        border-radius: 1.5rem;
+        box-shadow: var(--app-card-shadow);
+        overflow: hidden;
+        transition: transform 250ms ease, box-shadow 250ms ease;
+        text-align: left;
+    }
+
+    .difficulty-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 40px rgba(61, 44, 0, 0.1);
+    }
+
+    .difficulty-card__accent {
+        height: 8px;
+        border-radius: 1.5rem 1.5rem 0 0;
+    }
+
+    .difficulty-card__body {
+        padding: 1.75rem;
+    }
+
+    .difficulty-card__title {
+        margin: 0;
+        font-size: 1.65rem;
+        color: #3d2c00;
+    }
+
+    .difficulty-card__range {
+        margin-top: 0.8rem;
+        color: #FFCC79;
+        font-size: 1.5rem;
+    }
+
+    .difficulty-card__tagline {
+        margin-top: 0.9rem;
+        color: var(--app-muted);
+        line-height: 1.7;
+    }
+
+    .difficulty-card .button {
+        width: 100%;
+        margin-top: 1.5rem;
+    }
+
+    @media (max-width: 767px) {
+        .difficulty-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<section class="mx-auto max-w-4xl">
-    <div class="glass-card rounded-[2rem] border border-slate-800 p-8 shadow-xl shadow-slate-950/40 sm:p-10">
-        <p class="text-sm font-medium uppercase tracking-[0.3em] text-cyan-400">Game Setup</p>
-        <h1 class="mt-2 font-mono text-3xl font-bold text-white">Choose your difficulty</h1>
-        <p class="mt-4 max-w-2xl text-sm text-slate-400">
-            Pick a challenge level to start a new game. Each new game uses a fresh secret
-            number and allows up to 10 attempts.
-        </p>
+<section class="select-shell">
+    <h1 class="select-title">Choose Your Difficulty</h1>
+    <p class="select-subtitle">Higher difficulty = bigger multiplier. You get 10 attempts regardless.</p>
 
-        {% if active_game %}
-            <div class="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
-                You already have an active {{ active_game.difficulty }} game in progress.
-                Starting a new game will mark that run as lost.
-            </div>
-        {% endif %}
-
-        <div class="mt-8 grid gap-4 md:grid-cols-3">
-            {% for difficulty, settings in difficulty_config.items() %}
-                <form method="post" action="{{ url_for('game.start_game') }}" class="rounded-3xl border border-slate-800 bg-slate-950/85 p-6 transition hover:-translate-y-1 hover:border-cyan-500/35 hover:shadow-glow">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="difficulty" value="{{ difficulty }}">
-                    <div class="flex items-center justify-between gap-3">
-                        <h2 class="text-lg font-semibold text-white">{{ difficulty.title() }}</h2>
-                        <span class="rounded-full bg-cyan-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200">{{ settings.multiplier }}x</span>
-                    </div>
-                    <p class="mt-2 text-sm text-slate-400">
-                        Guess a number from {{ settings.min }} to {{ settings.max }} in up to {{ settings.max_attempts }} attempts.
-                    </p>
-                    <p class="mt-4 font-mono text-2xl text-cyan-300">
-                        {{ settings.min }}-{{ settings.max }}
-                    </p>
-                    <p class="mt-2 text-xs uppercase tracking-[0.25em] text-slate-500">
-                        {{ settings.max_attempts }} attempts available
-                    </p>
-                    <button class="mt-6 w-full rounded-2xl bg-cyan-500 px-4 py-3 font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-400" type="submit">
-                        Start {{ difficulty.title() }}
-                    </button>
-                </form>
-            {% endfor %}
+    {% if active_game %}
+        <div class="select-warning">
+            &#9888;&#65039; You have an active game in progress. Starting a new game will forfeit it.
         </div>
+    {% endif %}
+
+    <div class="difficulty-grid">
+        <form method="post" action="{{ url_for('game.start_game') }}" class="difficulty-card">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="difficulty" value="easy">
+            <div class="difficulty-card__accent" style="background:#86efac;"></div>
+            <div class="difficulty-card__body">
+                <h2 class="difficulty-card__title">Easy</h2>
+                <p class="difficulty-card__range">0 - 99</p>
+                <span class="difficulty-pill difficulty-pill--easy">1x Multiplier</span>
+                <p class="difficulty-card__tagline">Perfect for warming up</p>
+                <button class="button button--primary" type="submit">Play Easy</button>
+            </div>
+        </form>
+
+        <form method="post" action="{{ url_for('game.start_game') }}" class="difficulty-card">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="difficulty" value="moderate">
+            <div class="difficulty-card__accent" style="background:#fcd34d;"></div>
+            <div class="difficulty-card__body">
+                <h2 class="difficulty-card__title">Moderate</h2>
+                <p class="difficulty-card__range">0 - 999</p>
+                <span class="difficulty-pill difficulty-pill--moderate">2x Multiplier</span>
+                <p class="difficulty-card__tagline">Getting interesting...</p>
+                <button class="button button--primary" type="submit">Play Moderate</button>
+            </div>
+        </form>
+
+        <form method="post" action="{{ url_for('game.start_game') }}" class="difficulty-card">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="difficulty" value="expert">
+            <div class="difficulty-card__accent" style="background:#fca5a5;"></div>
+            <div class="difficulty-card__body">
+                <h2 class="difficulty-card__title">Expert</h2>
+                <p class="difficulty-card__range">0 - 9999</p>
+                <span class="difficulty-pill difficulty-pill--expert">3x Multiplier</span>
+                <p class="difficulty-card__tagline">Not for the faint-hearted</p>
+                <button class="button button--primary" type="submit">Play Expert</button>
+            </div>
+        </form>
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
 {% endblock %}

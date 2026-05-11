@@ -1,4 +1,4 @@
-from flask import Blueprint, g, render_template, request
+from flask import Blueprint, g, render_template
 from sqlalchemy import func
 
 from app.game.logic import DIFFICULTY_CONFIG
@@ -39,18 +39,10 @@ def profile_index():
         .all()
     )
     difficulty_counts = {row.difficulty: row.count for row in difficulty_rows}
-    games_by_difficulty = []
-    for difficulty, settings in DIFFICULTY_CONFIG.items():
-        count = difficulty_counts.get(difficulty, 0)
-        percentage = round((count / total_games) * 100, 1) if total_games else 0.0
-        games_by_difficulty.append(
-            {
-                "difficulty": difficulty,
-                "count": count,
-                "percentage": percentage,
-                "range_label": f"{settings['min']} to {settings['max']}",
-            }
-        )
+    games_by_difficulty = {
+        difficulty: difficulty_counts.get(difficulty, 0)
+        for difficulty in DIFFICULTY_CONFIG
+    }
 
     recent_games = (
         Game.query.filter_by(user_id=user_id)
@@ -59,23 +51,15 @@ def profile_index():
         .all()
     )
 
-    selected_game_id = request.args.get("game", type=int)
-    selected_game = None
-    if selected_game_id is not None:
-        selected_game = (
-            Game.query.filter_by(id=selected_game_id, user_id=user_id)
-            .first()
-        )
-    elif recent_games:
-        selected_game = recent_games[0]
-
     return render_template(
-        "profile/profile.html",
-        total_games=total_games,
-        total_wins=total_wins,
-        win_rate=win_rate,
-        best_score=best_score,
-        games_by_difficulty=games_by_difficulty,
+        "profile.html",
+        stats={
+            "total_games": total_games,
+            "total_wins": total_wins,
+            "win_rate": win_rate,
+            "best_score": best_score,
+            "games_by_difficulty": games_by_difficulty,
+        },
         recent_games=recent_games,
-        selected_game=selected_game,
+        user=g.current_user,
     )

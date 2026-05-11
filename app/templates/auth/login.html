@@ -2,41 +2,95 @@
 
 {% block title %}Login | NumberGuesser{% endblock %}
 
-{% block content %}
-<section class="mx-auto max-w-2xl">
-    <div class="glass-card rounded-[2rem] border border-slate-800 p-8 shadow-xl shadow-slate-950/40 sm:p-10">
-        <div class="mb-8">
-            <p class="text-sm font-medium uppercase tracking-[0.3em] text-cyan-400">Authentication</p>
-            <h1 class="mt-2 text-3xl font-bold text-white">Welcome back</h1>
-            <p class="mt-3 text-sm text-slate-400">Sign in to continue your guessing streak and leaderboard climb.</p>
-        </div>
+{% block styles %}
+<style>
+    .auth-shell {
+        max-width: 480px;
+        margin: 0 auto;
+        padding-top: 80px;
+    }
 
-        <form method="post" class="space-y-6">
+    .auth-card {
+        text-align: center;
+    }
+
+    .auth-logo {
+        height: 48px;
+        width: auto;
+        margin: 0 auto 1rem;
+        display: block;
+    }
+
+    .auth-title {
+        font-size: clamp(2rem, 5vw, 2.6rem);
+        color: #3d2c00;
+        margin: 0;
+    }
+
+    .auth-subtitle {
+        margin-top: 0.9rem;
+        color: var(--app-muted);
+        line-height: 1.7;
+    }
+
+    .auth-form {
+        margin-top: 2rem;
+        text-align: left;
+        display: grid;
+        gap: 1.1rem;
+    }
+
+    .auth-footer {
+        margin-top: 1.5rem;
+        text-align: center;
+        color: var(--app-muted);
+        font-size: 0.92rem;
+    }
+
+    .auth-footer a {
+        color: var(--app-brand);
+        font-weight: 700;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="auth-shell">
+    <div class="card auth-card">
+        <img class="auth-logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="NumberGuesser logo">
+        <h1 class="auth-title">Welcome Back</h1>
+        <p class="auth-subtitle">Log in to keep playing.</p>
+
+        <form method="post" class="auth-form">
             {{ form.hidden_tag() }}
 
             <div>
-                <label class="mb-2 block text-sm font-medium text-slate-200" for="{{ form.username.id }}">{{ form.username.label.text }}</label>
-                {{ form.username(class="w-full rounded-2xl border px-4 py-3 text-slate-100 outline-none transition focus:ring-2 focus:ring-cyan-500/20 " ~ ("border-rose-500 bg-rose-500/5 focus:border-rose-400" if form.username.errors else "border-slate-700 bg-slate-950 focus:border-cyan-400")) }}
+                <label class="form-label" for="{{ form.username.id }}">Username</label>
+                {{ form.username(class="form-input" ~ (" is-error" if form.username.errors else ""), placeholder="Enter your username") }}
                 {% for error in form.username.errors %}
-                    <p class="mt-2 text-sm text-rose-300">{{ error }}</p>
+                    <p class="field-error">{{ error }}</p>
                 {% endfor %}
             </div>
 
             <div>
-                <label class="mb-2 block text-sm font-medium text-slate-200" for="{{ form.password.id }}">{{ form.password.label.text }}</label>
-                {{ form.password(class="w-full rounded-2xl border px-4 py-3 text-slate-100 outline-none transition focus:ring-2 focus:ring-cyan-500/20 " ~ ("border-rose-500 bg-rose-500/5 focus:border-rose-400" if form.password.errors else "border-slate-700 bg-slate-950 focus:border-cyan-400")) }}
+                <label class="form-label" for="{{ form.password.id }}">Password</label>
+                {{ form.password(class="form-input" ~ (" is-error" if form.password.errors else ""), placeholder="Enter your password") }}
                 {% for error in form.password.errors %}
-                    <p class="mt-2 text-sm text-rose-300">{{ error }}</p>
+                    <p class="field-error">{{ error }}</p>
                 {% endfor %}
             </div>
 
-            {{ form.submit(class="w-full rounded-2xl bg-cyan-500 px-4 py-3 font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-400") }}
+            {{ form.submit(class="button button--primary w-full", value="Log In") }}
         </form>
 
-        <p class="mt-6 text-sm text-slate-400">
-            Need an account?
-            <a class="font-medium text-cyan-400 hover:text-cyan-300" href="{{ url_for('auth.register') }}">Register here</a>
+        <p class="auth-footer">
+            Don't have an account?
+            <a href="{{ url_for('auth.register') }}">Register &rarr;</a>
         </p>
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
 {% endblock %}

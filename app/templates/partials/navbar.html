@@ -1,0 +1,65 @@
+{% set active_user = current_user if current_user is defined and current_user else g.current_user %}
+
+<header class="site-navbar">
+    <div class="site-navbar__inner">
+        <a class="site-navbar__brand" href="{{ url_for('index') }}">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NumberGuesser logo">
+        </a>
+
+        <nav class="site-navbar__links" aria-label="Primary">
+            <a class="site-navbar__link {{ 'active' if request.path == '/' else '' }}" href="{{ url_for('index') }}">Home</a>
+            <a class="site-navbar__link {{ 'active' if request.path.startswith('/game') else '' }}" href="{{ url_for('game.select_game') }}">Play</a>
+            <a class="site-navbar__link {{ 'active' if request.path.startswith('/leaderboard') else '' }}" href="{{ url_for('leaderboard.leaderboard_index') }}">Leaderboard</a>
+            <a class="site-navbar__link {{ 'active' if request.path.startswith('/contact') else '' }}" href="{{ url_for('contact.contact_index') }}">Contact</a>
+            <a class="site-navbar__link {{ 'active' if request.path.startswith('/feedback') else '' }}" href="{{ url_for('feedback.feedback_index') }}">Feedback</a>
+        </nav>
+
+        <div class="site-navbar__actions">
+            {% if active_user %}
+                <a class="site-navbar__hello" href="{{ url_for('profile.profile_index') }}">Hi, {{ active_user.username }}</a>
+                <a class="button button--primary button--compact" href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+                <a class="button button--secondary button--compact" href="{{ url_for('auth.login') }}">Login</a>
+                <a class="button button--primary button--compact" href="{{ url_for('auth.register') }}">Register</a>
+            {% endif %}
+        </div>
+
+        <button class="site-navbar__toggle" type="button" aria-label="Toggle menu" data-navbar-toggle>
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+
+    <div class="site-navbar__mobile" data-navbar-menu>
+        <div class="site-navbar__mobile-panel">
+            <a class="site-navbar__link {{ 'active' if request.path == '/' else '' }}" href="{{ url_for('index') }}">Home</a>
+            <a class="site-navbar__link {{ 'active' if request.path.startswith('/game') else '' }}" href="{{ url_for('game.select_game') }}">Play</a>
+            <a class="site-navbar__link {{ 'active' if request.path.startswith('/leaderboard') else '' }}" href="{{ url_for('leaderboard.leaderboard_index') }}">Leaderboard</a>
+            <a class="site-navbar__link {{ 'active' if request.path.startswith('/contact') else '' }}" href="{{ url_for('contact.contact_index') }}">Contact</a>
+            <a class="site-navbar__link {{ 'active' if request.path.startswith('/feedback') else '' }}" href="{{ url_for('feedback.feedback_index') }}">Feedback</a>
+            {% if active_user %}
+                <a class="site-navbar__hello site-navbar__hello--mobile" href="{{ url_for('profile.profile_index') }}">Hi, {{ active_user.username }}</a>
+                <a class="button button--primary button--compact" href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+                <a class="button button--secondary button--compact" href="{{ url_for('auth.login') }}">Login</a>
+                <a class="button button--primary button--compact" href="{{ url_for('auth.register') }}">Register</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggle = document.querySelector("[data-navbar-toggle]");
+        const menu = document.querySelector("[data-navbar-menu]");
+
+        if (!toggle || !menu) {
+            return;
+        }
+
+        toggle.addEventListener("click", function () {
+            menu.classList.toggle("is-open");
+        });
+    });
+</script>

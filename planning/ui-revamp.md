@@ -191,7 +191,7 @@ return render_template('home.html',
 Produce the complete `home.html` file. No placeholders, no TODOs, no stubs. Every section fully implemented, styled, and ready to render.
 
 
-
+---- PHASE 2 - UI CONSISTENCY ---
 
 ## Context
 You are a Senior Frontend Engineer completing the UI revamp of "NumberGuesser" — a Flask/Jinja2 number guessing game. The homepage has already been built and establishes the full design system. You are now applying that same design system consistently across all remaining templates. Every template extends `app/templates/base.html` which already includes the navbar partial and loads both Google Fonts.
@@ -199,7 +199,7 @@ You are a Senior Frontend Engineer completing the UI revamp of "NumberGuesser" �
 ## Design System (Carry Over Exactly — No Deviations)
 - **Background:** #FFECD6
 - **Primary/Brand:** #FFCC79
-- **Dark text / headings:** #3d2c00
+- **Dark text / headings:** #000000
 - **Muted body text:** #7a5c30
 - **Section alternate background:** #FFF3E6
 - **Heading Font:** DynaPuff (all H1, H2, H3, card titles, large labels)
