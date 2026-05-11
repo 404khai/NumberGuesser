@@ -4,7 +4,7 @@
 
 {% block content %}
 <section class="mx-auto max-w-3xl">
-    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl shadow-slate-950/40">
+    <div class="glass-card rounded-[2rem] border border-slate-800 p-8 shadow-xl shadow-slate-950/40 sm:p-10">
         <p class="text-sm font-medium uppercase tracking-[0.3em] text-cyan-400">Feedback</p>
         <h1 class="mt-2 text-3xl font-bold text-white">Share your experience</h1>
         <p class="mt-3 text-sm text-slate-400">
@@ -20,7 +20,7 @@
                     {{ form.message.label.text }}
                 </label>
                 {{ form.message(
-                    class="min-h-48 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400",
+                    class="min-h-48 w-full rounded-2xl border px-4 py-3 text-slate-100 outline-none transition focus:ring-2 focus:ring-cyan-500/20 " ~ ("border-rose-500 bg-rose-500/5 focus:border-rose-400" if form.message.errors else "border-slate-700 bg-slate-950 focus:border-cyan-400"),
                     placeholder="Share detailed feedback about the game, authentication, leaderboard, UI, or anything else you noticed."
                 ) }}
                 <p class="mt-2 text-xs uppercase tracking-[0.25em] text-slate-500">Minimum 80 characters</p>
@@ -29,7 +29,7 @@
                 {% endfor %}
             </div>
 
-            <button class="w-full rounded-lg bg-cyan-500 px-4 py-3 font-semibold text-slate-950 transition hover:bg-cyan-400" type="submit">
+            <button class="w-full rounded-2xl bg-cyan-500 px-4 py-3 font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-400" type="submit">
                 {{ form.submit.label.text }}
             </button>
         </form>

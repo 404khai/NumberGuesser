@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Home | NumberGuesser{% endblock %}
+
+{% block content %}
+<section class="space-y-10">
+    <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+        <div class="glass-card rounded-[2rem] border border-cyan-500/20 p-8 shadow-glow sm:p-12">
+            <p class="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">Number Guessing Challenge</p>
+            <h1 class="mt-4 max-w-3xl font-mono text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
+                Can You Guess the Number?
+            </h1>
+            <p class="mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
+                Pick a difficulty, read the hints, and beat the clock on every attempt. Register,
+                climb the leaderboard, and turn every round into a high-score run.
+            </p>
+            <div class="mt-8 flex flex-col gap-4 sm:flex-row">
+                <a class="rounded-2xl bg-cyan-500 px-6 py-4 text-center font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-400" href="{{ url_for('game.select_game') }}">
+                    Play Now
+                </a>
+                <a class="rounded-2xl border border-slate-700 px-6 py-4 text-center font-semibold text-slate-200 transition hover:border-slate-500 hover:bg-slate-900 hover:text-white" href="{{ url_for('leaderboard.leaderboard_index') }}">
+                    View Leaderboard
+                </a>
+            </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            <div class="glass-card rounded-3xl border border-slate-800 p-6">
+                <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Live Snapshot</p>
+                <p class="mt-3 font-mono text-4xl font-bold text-cyan-300">{{ leaderboard_preview|length }}</p>
+                <p class="mt-2 text-sm text-slate-400">Top scores previewed on the home page right now.</p>
+            </div>
+            <div class="glass-card rounded-3xl border border-slate-800 p-6">
+                <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Difficulties</p>
+                <p class="mt-3 font-mono text-4xl font-bold text-white">{{ difficulty_config|length }}</p>
+                <p class="mt-2 text-sm text-slate-400">Easy, Moderate, and Expert ranges with escalating score multipliers.</p>
+            </div>
+            <div class="glass-card rounded-3xl border border-slate-800 p-6 sm:col-span-2 lg:col-span-1">
+                <div class="aspect-[4/3] rounded-2xl border border-slate-800 bg-[linear-gradient(135deg,rgba(6,182,212,0.16),rgba(15,23,42,0.2))] p-5">
+                    <div class="h-full rounded-2xl border border-slate-700/80 bg-slate-950/80 p-5">
+                        <p class="text-xs uppercase tracking-[0.3em] text-cyan-300">Preview Screen</p>
+                        <div class="mt-4 grid gap-3">
+                            <div class="rounded-xl bg-slate-900 p-3">
+                                <p class="text-xs text-slate-500">Attempt</p>
+                                <p class="mt-1 font-mono text-xl text-white">07 / 10</p>
+                            </div>
+                            <div class="rounded-xl bg-slate-900 p-3">
+                                <p class="text-xs text-slate-500">Hint</p>
+                                <p class="mt-1 text-sm text-cyan-200">Try a lower number.</p>
+                            </div>
+                            <div class="rounded-xl bg-slate-900 p-3">
+                                <p class="text-xs text-slate-500">Potential Score</p>
+                                <p class="mt-1 font-mono text-xl text-white">1600</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card rounded-[2rem] border border-slate-800 p-8 sm:p-10">
+        <div class="flex items-end justify-between gap-4">
+            <div>
+                <p class="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">How To Play</p>
+                <h2 class="mt-3 text-3xl font-bold text-white">Three simple steps</h2>
+            </div>
+        </div>
+        <div class="mt-8 grid gap-4 lg:grid-cols-3">
+            <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-6">
+                <p class="font-mono text-4xl text-cyan-300">01</p>
+                <h3 class="mt-4 text-xl font-semibold text-white">Choose Difficulty</h3>
+                <p class="mt-3 text-sm leading-6 text-slate-400">Start with Easy or jump straight into Expert if you want bigger ranges and stronger score multipliers.</p>
+            </div>
+            <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-6">
+                <p class="font-mono text-4xl text-cyan-300">02</p>
+                <h3 class="mt-4 text-xl font-semibold text-white">Enter Your Guess</h3>
+                <p class="mt-3 text-sm leading-6 text-slate-400">Every guess gives you a hint. Use the feedback to narrow the range before your attempts run out.</p>
+            </div>
+            <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-6">
+                <p class="font-mono text-4xl text-cyan-300">03</p>
+                <h3 class="mt-4 text-xl font-semibold text-white">Win Or Lose</h3>
+                <p class="mt-3 text-sm leading-6 text-slate-400">Finish strong to bank your score, show up on the leaderboard, and build a winning profile history.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <div class="glass-card rounded-[2rem] border border-slate-800 p-8 sm:p-10">
+            <p class="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">Difficulties</p>
+            <h2 class="mt-3 text-3xl font-bold text-white">Pick your challenge</h2>
+            <div class="mt-8 grid gap-4 md:grid-cols-3">
+                {% for difficulty, settings in difficulty_config.items() %}
+                    <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-6 transition hover:-translate-y-1 hover:border-cyan-500/35 hover:shadow-glow">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="text-xl font-semibold text-white">{{ difficulty.title() }}</h3>
+                            <span class="rounded-full bg-cyan-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200">{{ settings.multiplier }}x</span>
+                        </div>
+                        <p class="mt-4 font-mono text-2xl text-cyan-300">{{ settings.min }}-{{ settings.max }}</p>
+                        <p class="mt-2 text-sm text-slate-400">Maximum attempts: {{ settings.max_attempts }}</p>
+                        <p class="mt-4 text-sm leading-6 text-slate-400">
+                            {% if difficulty == 'easy' %}
+                                Fast onboarding and short ranges that help you learn the loop quickly.
+                            {% elif difficulty == 'moderate' %}
+                                Balanced difficulty with a larger search space and bigger score upside.
+                            {% else %}
+                                Huge number range for confident players chasing leaderboard-worthy runs.
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="glass-card rounded-[2rem] border border-slate-800 p-8 sm:p-10">
+            <div class="flex items-end justify-between gap-4">
+                <div>
+                    <p class="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">Leaderboard Preview</p>
+                    <h2 class="mt-3 text-3xl font-bold text-white">Top 5 players</h2>
+                </div>
+                <a class="text-sm font-semibold text-cyan-300 transition hover:text-cyan-200" href="{{ url_for('leaderboard.leaderboard_index') }}">See full board</a>
+            </div>
+
+            {% if leaderboard_preview %}
+                <div class="mt-8 space-y-4">
+                    {% for game, user in leaderboard_preview %}
+                        <div class="rounded-2xl border border-slate-800 bg-slate-950/80 p-4">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-sm font-semibold text-white">{{ loop.index }}. {{ user.username }}</p>
+                                    <p class="mt-1 text-xs uppercase tracking-[0.25em] text-slate-500">{{ game.difficulty.title() }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-mono text-2xl text-cyan-300">{{ game.score }}</p>
+                                    <p class="mt-1 text-xs text-slate-500">{{ game.ended_at.strftime('%Y-%m-%d') if game.ended_at else 'In progress' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="mt-8 rounded-3xl border border-dashed border-slate-700 bg-slate-950/60 p-8 text-center">
+                    <p class="text-lg font-semibold text-white">No leaderboard entries yet</p>
+                    <p class="mt-2 text-sm text-slate-400">Be the first player to finish a winning round and claim the top spot.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
