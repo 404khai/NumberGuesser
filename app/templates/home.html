@@ -2,149 +2,900 @@
 
 {% block title %}Home | NumberGuesser{% endblock %}
 
+{% block head_extra %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=DynaPuff:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --home-bg: #FFECD6;
+        --black: #000000;
+        --home-bg-alt: #FFF3E6;
+        --home-brand: #FFCC79;
+        --home-brand-dark: #f2bf62;
+        --home-text: #3d2c00;
+        --home-muted: #7a5c30;
+        --home-border: rgba(255, 204, 121, 0.4);
+        --home-shadow: 0 20px 45px rgba(122, 92, 48, 0.08);
+    }
+
+    body {
+        background: var(--home-bg);
+        color: var(--home-text);
+        font-family: "Comfortaa", sans-serif;
+    }
+
+    body > div.fixed.inset-0.-z-10,
+    body > header,
+    body > footer {
+        display: none;
+    }
+
+    body > main {
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    main > .mb-8 {
+        width: min(1100px, calc(100% - 2rem));
+        margin: 1.25rem auto 0;
+    }
+
+    .home-shell {
+        background: var(--home-bg);
+        color: var(--home-text);
+    }
+
+    .home-shell h1,
+    .home-shell h2,
+    .home-shell h3,
+    .home-shell h4,
+    .home-shell .font-heading {
+        font-family: "DynaPuff", cursive;
+    }
+
+    .home-shell p,
+    .home-shell a,
+    .home-shell span,
+    .home-shell button,
+    .home-shell td,
+    .home-shell th {
+        font-family: "Comfortaa", sans-serif;
+    }
+
+    .home-navbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        width: 100%;
+        background: var(--home-bg);
+        border-bottom: 1px solid var(--home-border);
+    }
+
+    .home-navbar__inner,
+    .home-footer__inner,
+    .home-section__inner {
+        width: min(1120px, calc(100% - 2rem));
+        margin: 0 auto;
+    }
+
+    .home-navbar__inner {
+        min-height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+        padding: 0.75rem 0;
+    }
+
+    .home-navbar__logo img {
+        height: 40px;
+        width: auto;
+        display: block;
+    }
+
+    .home-navbar__links {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        flex: 1;
+    }
+
+    .home-navbar__link {
+        position: relative;
+        color: var(--black);
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .home-navbar__link::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -0.3rem;
+        width: 100%;
+        height: 2px;
+        background: var(--home-brand);
+        transform: scaleX(0);
+        transform-origin: left center;
+        transition: transform 180ms ease;
+    }
+
+    .home-navbar__link:hover::after,
+    .home-navbar__link.is-active::after {
+        transform: scaleX(1);
+    }
+
+    .home-navbar__auth {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .home-pill-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        border-radius: 999px;
+        background: var(--home-brand);
+        color: var(--home-text);
+        font-weight: 700;
+        text-decoration: none;
+        transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+        box-shadow: 0 10px 22px rgba(255, 204, 121, 0.28);
+    }
+
+    .home-pill-button:hover {
+        background: var(--home-brand-dark);
+        transform: translateY(-2px);
+    }
+
+    .home-pill-button--small {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.92rem;
+    }
+
+    .home-pill-button--large {
+        padding: 1rem 1.8rem;
+        font-size: 1.05rem;
+        font-family: "DynaPuff", cursive;
+    }
+
+    .home-navbar__hello {
+        color: var(--home-text);
+        font-size: 0.95rem;
+        font-weight: 700;
+    }
+
+    .home-navbar__toggle {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border: 1px solid var(--home-border);
+        border-radius: 999px;
+        background: #fff8ef;
+        color: var(--home-text);
+    }
+
+    .home-navbar__mobile {
+        display: none;
+        padding: 0 0 1rem;
+    }
+
+    .home-navbar__mobile.is-open {
+        display: block;
+    }
+
+    .home-navbar__mobile-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1rem;
+        border-radius: 1.5rem;
+        background: #fff8ef;
+        box-shadow: var(--home-shadow);
+    }
+
+    .home-navbar__mobile-panel .home-navbar__link {
+        width: fit-content;
+    }
+
+    .home-navbar__mobile-auth {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding-top: 0.5rem;
+    }
+
+    .hero-section,
+    .levels-section,
+    .how-section,
+    .leaderboard-section {
+        width: 100%;
+    }
+
+    .hero-section {
+        position: relative;
+        overflow: hidden;
+        background: var(--home-bg);
+        padding: 96px 0 80px;
+    }
+
+    .hero-section__inner {
+        position: relative;
+        width: min(980px, calc(100% - 2rem));
+        margin: 0 auto;
+        text-align: center;
+        z-index: 1;
+    }
+
+    .hero-section__decor {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .hero-number {
+        position: absolute;
+        font-family: "DynaPuff", cursive;
+        font-size: clamp(4rem, 14vw, 8rem);
+        color: rgba(61, 44, 0, 0.08);
+        line-height: 1;
+    }
+
+    .hero-number--one { top: 10%; left: 10%; }
+    .hero-number--two { top: 0; right: 12%; }
+    .hero-number--three { bottom: 8%; left: 18%; }
+    .hero-number--four { bottom: 5%; right: 16%; }
+
+    .hero-title {
+        margin: 0;
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        line-height: 1.08;
+        color: var(--home-text);
+    }
+
+    .hero-subtitle {
+        max-width: 700px;
+        margin: 1.4rem auto 0;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: var(--home-muted);
+    }
+
+    @keyframes heroBounce {
+        0%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-5px); }
+        70% { transform: translateY(-2px); }
+    }
+
+    .hero-cta {
+        margin-top: 2rem;
+    }
+
+    .hero-cta .home-pill-button:hover {
+        animation: heroBounce 500ms ease;
+    }
+
+    .hero-secondary-link {
+        display: inline-block;
+        margin-top: 1rem;
+        color: var(--home-brand);
+        font-size: 0.92rem;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .home-section {
+        padding: 80px 0;
+    }
+
+    .home-section--alt {
+        background: var(--home-bg-alt);
+    }
+
+    .section-title {
+        margin: 0;
+        text-align: center;
+        font-size: clamp(2rem, 4.5vw, 3rem);
+        color: var(--home-text);
+    }
+
+    .section-subtitle {
+        max-width: 760px;
+        margin: 1rem auto 0;
+        text-align: center;
+        color: var(--home-muted);
+        line-height: 1.75;
+    }
+
+    .levels-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.5rem;
+        max-width: 960px;
+        margin: 2.75rem auto 0;
+    }
+
+    .level-card {
+        background: #ffffff;
+        border-radius: 1.75rem;
+        padding: 1.75rem;
+        box-shadow: var(--home-shadow);
+        transition: transform 200ms ease, box-shadow 200ms ease;
+    }
+
+    .level-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 24px 50px rgba(122, 92, 48, 0.12);
+    }
+
+    .level-card__accent {
+        height: 8px;
+        border-radius: 999px;
+        margin-bottom: 1.25rem;
+    }
+
+    .level-card__top {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .level-card__multiplier {
+        min-width: 64px;
+        padding: 0.6rem 0.8rem;
+        border-radius: 999px;
+        text-align: center;
+        font-family: "DynaPuff", cursive;
+        font-size: 1.1rem;
+        color: var(--home-text);
+        background: rgba(255, 204, 121, 0.26);
+    }
+
+    .level-card__name,
+    .level-card__range {
+        color: var(--home-text);
+    }
+
+    .level-card__name {
+        margin: 0;
+        font-size: 1.45rem;
+    }
+
+    .level-card__range {
+        margin-top: 0.65rem;
+        font-size: 1.2rem;
+    }
+
+    .level-card__tagline {
+        margin-top: 1rem;
+        color: var(--home-muted);
+        line-height: 1.7;
+    }
+
+    .bento-wrap {
+        width: min(80vw, 1080px);
+        margin: 2.75rem auto 0;
+    }
+
+    .bento-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .bento-left-top { grid-column: 1; grid-row: 1; }
+    .bento-left-bottom { grid-column: 1; grid-row: 2; }
+    .bento-right { grid-column: 2; grid-row: 1 / span 2; }
+
+    .bento-card {
+        background: #ffffff;
+        border-radius: 1.75rem;
+        padding: 1.8rem;
+        box-shadow: var(--home-shadow);
+    }
+
+    .bento-card__icon {
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    .bento-card__title {
+        margin: 1rem 0 0;
+        font-size: 1.45rem;
+        color: var(--home-text);
+    }
+
+    .bento-card__copy {
+        margin-top: 0.85rem;
+        color: var(--home-muted);
+        line-height: 1.75;
+    }
+
+    .bento-preview {
+        margin-top: 1.5rem;
+        height: 280px;
+        position: relative;
+        border-radius: 1rem;
+        overflow: hidden;
+        background: var(--home-bg-alt);
+    }
+
+    .bento-preview img,
+    .bento-preview__placeholder {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .bento-preview__placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--home-muted);
+        background: var(--home-bg-alt);
+        font-weight: 600;
+    }
+
+    .leaderboard-card {
+        max-width: 900px;
+        margin: 2.75rem auto 0;
+        background: rgba(255, 255, 255, 0.78);
+        border-radius: 1.75rem;
+        box-shadow: var(--home-shadow);
+        overflow: hidden;
+    }
+
+    .leaderboard-table-wrap {
+        overflow-x: auto;
+    }
+
+    .leaderboard-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .leaderboard-table thead th {
+        padding: 1.15rem 1.25rem;
+        text-align: left;
+        color: var(--home-muted);
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        background: rgba(255, 243, 230, 0.8);
+    }
+
+    .leaderboard-table tbody td {
+        padding: 1.15rem 1.25rem;
+        color: var(--home-text);
+        font-size: 0.96rem;
+        vertical-align: middle;
+    }
+
+    .leaderboard-table tbody tr:nth-child(odd) {
+        background: #ffffff;
+    }
+
+    .leaderboard-table tbody tr:nth-child(even) {
+        background: var(--home-bg);
+    }
+
+    .leaderboard-table tbody tr.rank-1,
+    .leaderboard-table tbody tr.rank-2,
+    .leaderboard-table tbody tr.rank-3 {
+        font-weight: 700;
+    }
+
+    .leaderboard-table tbody tr.rank-1 { border-left: 4px solid #d4a520; }
+    .leaderboard-table tbody tr.rank-2 { border-left: 4px solid #b7bcc5; }
+    .leaderboard-table tbody tr.rank-3 { border-left: 4px solid #c97c4a; }
+
+    .leaderboard-rank {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 46px;
+        min-height: 46px;
+        border-radius: 999px;
+        font-weight: 700;
+        color: var(--home-text);
+        background: rgba(255, 204, 121, 0.18);
+    }
+
+    .leaderboard-rank img {
+        width: 34px;
+        height: 34px;
+        object-fit: contain;
+    }
+
+    .leaderboard-score {
+        font-family: "DynaPuff", cursive;
+        font-size: 1.35rem;
+        color: var(--home-text);
+    }
+
+    .leaderboard-cta {
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .home-footer {
+        width: 100%;
+        background: var(--home-text);
+        color: #ffffff;
+        margin-top: 0;
+    }
+
+    .home-footer__inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding: 2rem 0 1.5rem;
+    }
+
+    .home-footer__brand {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .home-footer__brand img {
+        height: 32px;
+        width: auto;
+        display: block;
+    }
+
+    .home-footer__tagline {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .home-footer__links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 1rem 1.5rem;
+    }
+
+    .home-footer__links a {
+        color: var(--home-brand);
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .home-footer__bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 1rem 0 1.5rem;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.88rem;
+    }
+
+    @media (max-width: 900px) {
+        .home-navbar__links,
+        .home-navbar__auth {
+            display: none;
+        }
+
+        .home-navbar__toggle {
+            display: inline-flex;
+        }
+
+        .levels-grid,
+        .bento-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .bento-grid {
+            grid-template-rows: auto;
+        }
+
+        .bento-left-top,
+        .bento-left-bottom,
+        .bento-right {
+            grid-column: auto;
+            grid-row: auto;
+        }
+
+        .bento-wrap {
+            width: min(100%, calc(100vw - 2rem));
+        }
+    }
+
+    @media (max-width: 720px) {
+        .home-navbar__inner,
+        .home-footer__inner,
+        .home-section__inner {
+            width: min(100%, calc(100% - 1.25rem));
+        }
+
+        .hero-section {
+            padding: 84px 0 72px;
+        }
+
+        .hero-number--one { left: 2%; }
+        .hero-number--two { right: 4%; }
+        .hero-number--three { left: 8%; }
+        .hero-number--four { right: 8%; }
+
+        .home-section {
+            padding: 68px 0;
+        }
+
+        .home-footer__inner {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .home-footer__links {
+            justify-content: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<section class="space-y-10">
-    <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-        <div class="glass-card rounded-[2rem] border border-cyan-500/20 p-8 shadow-glow sm:p-12">
-            <p class="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">Number Guessing Challenge</p>
-            <h1 class="mt-4 max-w-3xl font-mono text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
-                Can You Guess the Number?
-            </h1>
-            <p class="mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
-                Pick a difficulty, read the hints, and beat the clock on every attempt. Register,
-                climb the leaderboard, and turn every round into a high-score run.
-            </p>
-            <div class="mt-8 flex flex-col gap-4 sm:flex-row">
-                <a class="rounded-2xl bg-cyan-500 px-6 py-4 text-center font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-400" href="{{ url_for('game.select_game') }}">
-                    Play Now
-                </a>
-                <a class="rounded-2xl border border-slate-700 px-6 py-4 text-center font-semibold text-slate-200 transition hover:border-slate-500 hover:bg-slate-900 hover:text-white" href="{{ url_for('leaderboard.leaderboard_index') }}">
-                    View Leaderboard
-                </a>
+{% set active_user = current_user if current_user is defined and current_user else g.current_user %}
+
+<div class="home-shell">
+    <header class="home-navbar">
+        <div class="home-navbar__inner">
+            <a class="home-navbar__logo" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NumberGuesser logo">
+            </a>
+
+            <nav class="home-navbar__links" aria-label="Primary">
+                <a class="home-navbar__link is-active" href="{{ url_for('index') }}">Home</a>
+                <a class="home-navbar__link" href="{{ url_for('leaderboard.leaderboard_index') }}">Leaderboard</a>
+                <a class="home-navbar__link" href="{{ url_for('contact.contact_index') }}">Contact</a>
+            </nav>
+
+            <div class="home-navbar__auth">
+                {% if active_user %}
+                    <span class="home-navbar__hello">Hi, {{ active_user.username }}</span>
+                    <a class="home-pill-button home-pill-button--small" href="{{ url_for('auth.logout') }}">Logout</a>
+                {% else %}
+                    <a class="home-pill-button home-pill-button--small" href="{{ url_for('auth.login') }}">Login</a>
+                    <a class="home-pill-button home-pill-button--small" href="{{ url_for('auth.register') }}">Register</a>
+                {% endif %}
             </div>
+
+            <button class="home-navbar__toggle" type="button" aria-label="Toggle menu" data-home-menu-toggle>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4A1 1 0 013 5zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm1 4a1 1 0 100 2h12a1 1 0 100-2H4z" clip-rule="evenodd" />
+                </svg>
+            </button>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-            <div class="glass-card rounded-3xl border border-slate-800 p-6">
-                <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Live Snapshot</p>
-                <p class="mt-3 font-mono text-4xl font-bold text-cyan-300">{{ leaderboard_preview|length }}</p>
-                <p class="mt-2 text-sm text-slate-400">Top scores previewed on the home page right now.</p>
-            </div>
-            <div class="glass-card rounded-3xl border border-slate-800 p-6">
-                <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Difficulties</p>
-                <p class="mt-3 font-mono text-4xl font-bold text-white">{{ difficulty_config|length }}</p>
-                <p class="mt-2 text-sm text-slate-400">Easy, Moderate, and Expert ranges with escalating score multipliers.</p>
-            </div>
-            <div class="glass-card rounded-3xl border border-slate-800 p-6 sm:col-span-2 lg:col-span-1">
-                <div class="aspect-[4/3] rounded-2xl border border-slate-800 bg-[linear-gradient(135deg,rgba(6,182,212,0.16),rgba(15,23,42,0.2))] p-5">
-                    <div class="h-full rounded-2xl border border-slate-700/80 bg-slate-950/80 p-5">
-                        <p class="text-xs uppercase tracking-[0.3em] text-cyan-300">Preview Screen</p>
-                        <div class="mt-4 grid gap-3">
-                            <div class="rounded-xl bg-slate-900 p-3">
-                                <p class="text-xs text-slate-500">Attempt</p>
-                                <p class="mt-1 font-mono text-xl text-white">07 / 10</p>
-                            </div>
-                            <div class="rounded-xl bg-slate-900 p-3">
-                                <p class="text-xs text-slate-500">Hint</p>
-                                <p class="mt-1 text-sm text-cyan-200">Try a lower number.</p>
-                            </div>
-                            <div class="rounded-xl bg-slate-900 p-3">
-                                <p class="text-xs text-slate-500">Potential Score</p>
-                                <p class="mt-1 font-mono text-xl text-white">1600</p>
-                            </div>
-                        </div>
-                    </div>
+        <div class="home-navbar__inner home-navbar__mobile" data-home-menu>
+            <div class="home-navbar__mobile-panel">
+                <a class="home-navbar__link is-active" href="{{ url_for('index') }}">Home</a>
+                <a class="home-navbar__link" href="{{ url_for('leaderboard.leaderboard_index') }}">Leaderboard</a>
+                <a class="home-navbar__link" href="{{ url_for('contact.contact_index') }}">Contact</a>
+                <div class="home-navbar__mobile-auth">
+                    {% if active_user %}
+                        <span class="home-navbar__hello">Hi, {{ active_user.username }}</span>
+                        <a class="home-pill-button home-pill-button--small" href="{{ url_for('auth.logout') }}">Logout</a>
+                    {% else %}
+                        <a class="home-pill-button home-pill-button--small" href="{{ url_for('auth.login') }}">Login</a>
+                        <a class="home-pill-button home-pill-button--small" href="{{ url_for('auth.register') }}">Register</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
-    </div>
+    </header>
 
-    <div class="glass-card rounded-[2rem] border border-slate-800 p-8 sm:p-10">
-        <div class="flex items-end justify-between gap-4">
-            <div>
-                <p class="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">How To Play</p>
-                <h2 class="mt-3 text-3xl font-bold text-white">Three simple steps</h2>
-            </div>
+    <section class="hero-section">
+        <div class="hero-section__decor" aria-hidden="true">
+            <span class="hero-number hero-number--one">1?</span>
+            <span class="hero-number hero-number--two">7?</span>
+            <span class="hero-number hero-number--three">3?</span>
+            <span class="hero-number hero-number--four">9?</span>
         </div>
-        <div class="mt-8 grid gap-4 lg:grid-cols-3">
-            <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-6">
-                <p class="font-mono text-4xl text-cyan-300">01</p>
-                <h3 class="mt-4 text-xl font-semibold text-white">Choose Difficulty</h3>
-                <p class="mt-3 text-sm leading-6 text-slate-400">Start with Easy or jump straight into Expert if you want bigger ranges and stronger score multipliers.</p>
+        <div class="hero-section__inner">
+            <h1 class="hero-title">Can You Guess the Number?</h1>
+            <p class="hero-subtitle">Pick a difficulty, make your guesses, beat the leaderboard.</p>
+            <div class="hero-cta">
+                <a class="home-pill-button home-pill-button--large" href="{{ url_for('game.select_game') }}">Start Playing &rarr;</a>
             </div>
-            <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-6">
-                <p class="font-mono text-4xl text-cyan-300">02</p>
-                <h3 class="mt-4 text-xl font-semibold text-white">Enter Your Guess</h3>
-                <p class="mt-3 text-sm leading-6 text-slate-400">Every guess gives you a hint. Use the feedback to narrow the range before your attempts run out.</p>
-            </div>
-            <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-6">
-                <p class="font-mono text-4xl text-cyan-300">03</p>
-                <h3 class="mt-4 text-xl font-semibold text-white">Win Or Lose</h3>
-                <p class="mt-3 text-sm leading-6 text-slate-400">Finish strong to bank your score, show up on the leaderboard, and build a winning profile history.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <div class="glass-card rounded-[2rem] border border-slate-800 p-8 sm:p-10">
-            <p class="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">Difficulties</p>
-            <h2 class="mt-3 text-3xl font-bold text-white">Pick your challenge</h2>
-            <div class="mt-8 grid gap-4 md:grid-cols-3">
-                {% for difficulty, settings in difficulty_config.items() %}
-                    <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-6 transition hover:-translate-y-1 hover:border-cyan-500/35 hover:shadow-glow">
-                        <div class="flex items-center justify-between gap-3">
-                            <h3 class="text-xl font-semibold text-white">{{ difficulty.title() }}</h3>
-                            <span class="rounded-full bg-cyan-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200">{{ settings.multiplier }}x</span>
-                        </div>
-                        <p class="mt-4 font-mono text-2xl text-cyan-300">{{ settings.min }}-{{ settings.max }}</p>
-                        <p class="mt-2 text-sm text-slate-400">Maximum attempts: {{ settings.max_attempts }}</p>
-                        <p class="mt-4 text-sm leading-6 text-slate-400">
-                            {% if difficulty == 'easy' %}
-                                Fast onboarding and short ranges that help you learn the loop quickly.
-                            {% elif difficulty == 'moderate' %}
-                                Balanced difficulty with a larger search space and bigger score upside.
-                            {% else %}
-                                Huge number range for confident players chasing leaderboard-worthy runs.
-                            {% endif %}
-                        </p>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="glass-card rounded-[2rem] border border-slate-800 p-8 sm:p-10">
-            <div class="flex items-end justify-between gap-4">
-                <div>
-                    <p class="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">Leaderboard Preview</p>
-                    <h2 class="mt-3 text-3xl font-bold text-white">Top 5 players</h2>
-                </div>
-                <a class="text-sm font-semibold text-cyan-300 transition hover:text-cyan-200" href="{{ url_for('leaderboard.leaderboard_index') }}">See full board</a>
-            </div>
-
-            {% if leaderboard_preview %}
-                <div class="mt-8 space-y-4">
-                    {% for game, user in leaderboard_preview %}
-                        <div class="rounded-2xl border border-slate-800 bg-slate-950/80 p-4">
-                            <div class="flex items-center justify-between gap-4">
-                                <div>
-                                    <p class="text-sm font-semibold text-white">{{ loop.index }}. {{ user.username }}</p>
-                                    <p class="mt-1 text-xs uppercase tracking-[0.25em] text-slate-500">{{ game.difficulty.title() }}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-mono text-2xl text-cyan-300">{{ game.score }}</p>
-                                    <p class="mt-1 text-xs text-slate-500">{{ game.ended_at.strftime('%Y-%m-%d') if game.ended_at else 'In progress' }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="mt-8 rounded-3xl border border-dashed border-slate-700 bg-slate-950/60 p-8 text-center">
-                    <p class="text-lg font-semibold text-white">No leaderboard entries yet</p>
-                    <p class="mt-2 text-sm text-slate-400">Be the first player to finish a winning round and claim the top spot.</p>
-                </div>
+            {% if not active_user %}
+                <a class="hero-secondary-link" href="{{ url_for('auth.register') }}">New here? Create a free account</a>
             {% endif %}
         </div>
-    </div>
-</section>
+    </section>
+
+    <section class="home-section home-section--alt levels-section">
+        <div class="home-section__inner">
+            <h2 class="section-title">Choose Your Challenge</h2>
+            <p class="section-subtitle">3 levels. 10 attempts each. Higher difficulty = bigger score multiplier.</p>
+
+            <div class="levels-grid">
+                <article class="level-card">
+                    <div class="level-card__accent" style="background:#86efac;"></div>
+                    <div class="level-card__top">
+                        <div>
+                            <h3 class="level-card__name">Easy</h3>
+                            <p class="level-card__range">0 - 99</p>
+                        </div>
+                        <span class="level-card__multiplier">1x</span>
+                    </div>
+                    <p class="level-card__tagline">Perfect for warming up</p>
+                </article>
+
+                <article class="level-card">
+                    <div class="level-card__accent" style="background:#fcd34d;"></div>
+                    <div class="level-card__top">
+                        <div>
+                            <h3 class="level-card__name">Moderate</h3>
+                            <p class="level-card__range">0 - 999</p>
+                        </div>
+                        <span class="level-card__multiplier">2x</span>
+                    </div>
+                    <p class="level-card__tagline">Getting interesting...</p>
+                </article>
+
+                <article class="level-card">
+                    <div class="level-card__accent" style="background:#fca5a5;"></div>
+                    <div class="level-card__top">
+                        <div>
+                            <h3 class="level-card__name">Expert</h3>
+                            <p class="level-card__range">0 - 9999</p>
+                        </div>
+                        <span class="level-card__multiplier">3x</span>
+                    </div>
+                    <p class="level-card__tagline">Not for the faint-hearted</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-section how-section">
+        <div class="home-section__inner">
+            <h2 class="section-title">How to Play</h2>
+
+            <div class="bento-wrap">
+                <div class="bento-grid">
+                    <article class="bento-card bento-left-top">
+                        <div class="bento-card__icon" aria-hidden="true">🎯</div>
+                        <h3 class="bento-card__title">Choose Your Difficulty</h3>
+                        <p class="bento-card__copy">Pick Easy, Moderate, or Expert. The harder the level, the higher the score multiplier.</p>
+                    </article>
+
+                    <article class="bento-card bento-left-bottom">
+                        <div class="bento-card__icon" aria-hidden="true">🔢</div>
+                        <h3 class="bento-card__title">Make Your Guess</h3>
+                        <p class="bento-card__copy">Enter a number within the range. You get 10 attempts - use them wisely.</p>
+                    </article>
+
+                    <article class="bento-card bento-right">
+                        <div class="bento-card__icon" aria-hidden="true">💡</div>
+                        <h3 class="bento-card__title">Read the Hints</h3>
+                        <p class="bento-card__copy">After each guess, we'll tell you if the answer is higher or lower. Close in and claim the win.</p>
+                        <div class="bento-preview">
+                            <img
+                                src="{{ url_for('static', filename='images/highfive.jpg') }}"
+                                alt="Gameplay preview"
+                                onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');"
+                            >
+                            <div class="bento-preview__placeholder hidden">[ Game Preview ]</div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-section home-section--alt leaderboard-section">
+        <div class="home-section__inner">
+            <h2 class="section-title">Leaderboard</h2>
+            <p class="section-subtitle">The best of the best. Updated in real time.</p>
+
+            <div class="leaderboard-card">
+                <div class="leaderboard-table-wrap">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Difficulty</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if leaderboard_preview %}
+                                {% for entry in leaderboard_preview %}
+                                    {% if entry is sequence and entry is not string and entry is not mapping %}
+                                        {% set game = entry[0] %}
+                                        {% set user = entry[1] %}
+                                    {% else %}
+                                        {% set game = entry %}
+                                        {% set user = entry.user %}
+                                    {% endif %}
+                                    <tr class="rank-{{ loop.index }}">
+                                        <td>
+                                            {% if loop.index == 1 %}
+                                                <span class="leaderboard-rank">
+                                                    <img src="{{ url_for('static', filename='images/goldMedal.png') }}" alt="Gold medal">
+                                                </span>
+                                            {% elif loop.index == 2 %}
+                                                <span class="leaderboard-rank">
+                                                    <img src="{{ url_for('static', filename='images/silverMedal.png') }}" alt="Silver medal">
+                                                </span>
+                                            {% elif loop.index == 3 %}
+                                                <span class="leaderboard-rank">
+                                                    <img src="{{ url_for('static', filename='images/bronzeMedal.png') }}" alt="Bronze medal">
+                                                </span>
+                                            {% else %}
+                                                <span class="leaderboard-rank">{{ loop.index }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ user.username if user else "Unknown Player" }}</td>
+                                        <td>{{ game.difficulty.title() }}</td>
+                                        <td><span class="leaderboard-score">{{ game.score }}</span></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" style="text-align:center; padding:2rem; color:var(--home-muted);">
+                                        No winners yet. Be the first to claim the board.
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="leaderboard-cta">
+                <a class="home-pill-button home-pill-button--large" href="{{ url_for('leaderboard.leaderboard_index') }}">View Full Leaderboard &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="home-footer">
+        <div class="home-footer__inner">
+            <div class="home-footer__brand">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NumberGuesser logo">
+                <p class="home-footer__tagline">A playful guessing game built for score chasers, leaderboard climbers, and Flask learners alike.</p>
+            </div>
+            <nav class="home-footer__links" aria-label="Footer">
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('leaderboard.leaderboard_index') }}">Leaderboard</a>
+                <a href="{{ url_for('contact.contact_index') }}">Contact</a>
+                <a href="{{ url_for('feedback.feedback_index') }}">Feedback</a>
+            </nav>
+        </div>
+        <div class="home-footer__bottom">
+            &copy; 2025 NumberGuesser &middot; Built with Flask
+        </div>
+    </footer>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggle = document.querySelector("[data-home-menu-toggle]");
+        const menu = document.querySelector("[data-home-menu]");
+
+        if (toggle && menu) {
+            toggle.addEventListener("click", function () {
+                menu.classList.toggle("is-open");
+            });
+        }
+    });
+</script>
 {% endblock %}
