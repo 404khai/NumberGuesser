@@ -19,8 +19,9 @@ def test_home_page_renders_leaderboard_preview(client, create_user, create_game)
 
     assert response.status_code == 200
     assert b"Can You Guess the Number?" in response.data
-    assert b"Top 5 players" in response.data
+    assert b"The best of the best. Updated in real time." in response.data
     assert b"previewuser" in response.data
+    assert b"difficulty-pill difficulty-pill--moderate" in response.data
 
 
 def test_health_check_returns_ok(client):

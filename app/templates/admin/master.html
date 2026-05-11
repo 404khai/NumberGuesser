@@ -1,0 +1,506 @@
+{% extends 'admin/base.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% import 'admin/static.html' as admin_static with context %}
+
+{% block head_meta %}
+    {{ super() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=DynaPuff:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block head_css %}
+    {{ super() }}
+    <style>
+        :root {
+            --admin-bg: #FFECD6;
+            --admin-bg-alt: #FFF3E6;
+            --admin-brand: #FFCC79;
+            --admin-brand-dark: #f5bc60;
+            --admin-text: #3d2c00;
+            --admin-heading: #000000;
+            --admin-muted: #7a5c30;
+            --admin-border: rgba(255, 204, 121, 0.42);
+            --admin-card-shadow: 0 4px 24px rgba(61, 44, 0, 0.07);
+        }
+
+        body {
+            margin: 0;
+            background: var(--admin-bg);
+            color: var(--admin-text);
+            font-family: "Comfortaa", cursive;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: "DynaPuff", cursive;
+            color: var(--admin-heading);
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .admin-shell {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+        }
+
+        .admin-sidebar {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 1.25rem;
+            background: #fff7ec;
+            border-right: 1px solid var(--admin-border);
+            box-shadow: 8px 0 30px rgba(61, 44, 0, 0.04);
+        }
+
+        .admin-sidebar__brand {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding: 0.35rem 0.35rem 1.15rem;
+            text-decoration: none;
+        }
+
+        .admin-sidebar__brand img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+
+        .admin-sidebar__brand-copy {
+            display: grid;
+            gap: 0.15rem;
+        }
+
+        .admin-sidebar__brand-title {
+            font-family: "DynaPuff", cursive;
+            color: var(--admin-heading);
+            font-size: 1rem;
+        }
+
+        .admin-sidebar__brand-subtitle {
+            color: var(--admin-muted);
+            font-size: 0.8rem;
+        }
+
+        .admin-sidebar__nav {
+            display: grid;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .admin-sidebar__link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            border-radius: 1rem;
+            padding: 0.85rem 1rem;
+            color: var(--admin-text);
+            text-decoration: none;
+            font-weight: 700;
+            transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+        }
+
+        .admin-sidebar__link:hover {
+            background: rgba(255, 204, 121, 0.24);
+            color: var(--admin-text);
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+
+        .admin-sidebar__link.is-active {
+            background: #d9a84b;
+            color: #2c1d00;
+        }
+
+        .admin-sidebar__icon {
+            width: 2rem;
+            height: 2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            background: rgba(255, 204, 121, 0.22);
+            font-size: 0.92rem;
+            flex-shrink: 0;
+        }
+
+        .admin-sidebar__footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--admin-border);
+        }
+
+        .admin-sidebar__user-label {
+            color: var(--admin-muted);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+
+        .admin-sidebar__user-name {
+            margin-top: 0.5rem;
+            font-family: "DynaPuff", cursive;
+            color: var(--admin-heading);
+            font-size: 1.1rem;
+            word-break: break-word;
+        }
+
+        .admin-content {
+            padding: 1.5rem;
+        }
+
+        .admin-content__surface {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .admin-page-header {
+            margin-bottom: 1.25rem;
+        }
+
+        .admin-page-title {
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            color: var(--admin-text);
+        }
+
+        .admin-page-subtitle {
+            margin-top: 0.85rem;
+            color: var(--admin-muted);
+            line-height: 1.75;
+        }
+
+        .admin-page-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: var(--admin-card-shadow);
+            padding: 1.5rem;
+        }
+
+        .admin-flash-stack {
+            display: grid;
+            gap: 0.75rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .admin-flash {
+            width: fit-content;
+            max-width: min(100%, 760px);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            border: none;
+            border-radius: 999px;
+            padding: 0.8rem 1rem 0.8rem 1.15rem;
+            box-shadow: var(--admin-card-shadow);
+            color: var(--admin-text);
+        }
+
+        .admin-flash.alert-success {
+            background: #d1fae5;
+        }
+
+        .admin-flash.alert-danger {
+            background: #fee2e2;
+        }
+
+        .admin-flash.alert-info,
+        .admin-flash.alert-warning {
+            background: #fef9c3;
+        }
+
+        .admin-flash .close {
+            border: none;
+            background: rgba(61, 44, 0, 0.08);
+            border-radius: 999px;
+            width: 1.9rem;
+            height: 1.9rem;
+            margin-left: 0.2rem;
+            opacity: 1;
+            color: inherit;
+            text-shadow: none;
+        }
+
+        .nav-tabs {
+            border-bottom: none;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .nav-tabs .nav-item {
+            margin-bottom: 0;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 999px;
+            padding: 0.72rem 1.15rem;
+            background: #fff7ec;
+            color: var(--admin-text);
+            font-weight: 700;
+        }
+
+        .nav-tabs .nav-link.active,
+        .nav-tabs .nav-link:hover {
+            background: var(--admin-brand);
+            color: var(--admin-text);
+        }
+
+        .table-responsive {
+            border-radius: 1.2rem;
+            overflow: hidden;
+            border: 1px solid var(--admin-border);
+        }
+
+        .table {
+            margin-bottom: 0;
+            background: #ffffff;
+        }
+
+        .table thead th {
+            border-top: none;
+            border-bottom: 1px solid var(--admin-border);
+            background: rgba(255, 203, 147, 0.8);
+            color: var(--admin-muted);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .table td,
+        .table th {
+            border-color: rgba(255, 204, 121, 0.22);
+            vertical-align: middle;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background: #ffffff;
+        }
+
+        .table-striped tbody tr:nth-of-type(even) {
+            background: var(--admin-bg-alt);
+        }
+
+        .table-hover tbody tr:hover {
+            background: #fff7ec;
+        }
+
+        .list-buttons-column a,
+        .column-header a,
+        .table a {
+            color: var(--admin-text);
+        }
+
+        .form-control,
+        .select2-container--default .select2-selection--single,
+        .select2-container--default .select2-selection--multiple {
+            border: 1.5px solid var(--admin-brand);
+            border-radius: 0.75rem;
+            min-height: 46px;
+            box-shadow: none;
+        }
+
+        .form-control:focus,
+        .select2-container--default.select2-container--focus .select2-selection--multiple,
+        .select2-container--default.select2-container--open .select2-selection--single {
+            border-color: var(--admin-brand-dark);
+            box-shadow: 0 0 0 3px rgba(255, 204, 121, 0.22);
+        }
+
+        .form-group label,
+        .control-label {
+            color: var(--admin-text);
+            font-weight: 700;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 999px;
+            padding: 0.72rem 1.15rem;
+            font-weight: 700;
+            transition: transform 180ms ease, background-color 180ms ease, color 180ms ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary,
+        .btn-info,
+        .btn-success {
+            background: var(--admin-brand);
+            color: var(--admin-text);
+        }
+
+        .btn-primary:hover,
+        .btn-info:hover,
+        .btn-success:hover {
+            background: var(--admin-brand-dark);
+            color: var(--admin-text);
+        }
+
+        .btn-secondary,
+        .btn-default,
+        .btn-light {
+            background: #fff7ec;
+            color: var(--admin-text);
+            border: 1px solid var(--admin-border);
+        }
+
+        .btn-danger {
+            background: #fca5a5;
+            color: #7f1d1d;
+        }
+
+        .btn-link {
+            color: var(--admin-text);
+        }
+
+        .dropdown-menu {
+            border: 1px solid var(--admin-border);
+            border-radius: 1rem;
+            box-shadow: var(--admin-card-shadow);
+        }
+
+        .dropdown-item {
+            color: var(--admin-text);
+            font-weight: 700;
+        }
+
+        .dropdown-item.active,
+        .dropdown-item:hover {
+            background: #fff7ec;
+            color: var(--admin-text);
+        }
+
+        .pagination {
+            margin-top: 1.25rem;
+        }
+
+        .page-link {
+            border: 1px solid var(--admin-border);
+            color: var(--admin-text);
+            background: #ffffff;
+        }
+
+        .page-item.active .page-link,
+        .page-link:hover {
+            background: var(--admin-brand);
+            border-color: var(--admin-brand);
+            color: var(--admin-text);
+        }
+
+        .modal-content {
+            border-radius: 1.2rem;
+            border: 1px solid var(--admin-border);
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+        }
+
+        .well,
+        .card,
+        .filters {
+            background: #fff7ec;
+            border: 1px solid var(--admin-border);
+            border-radius: 1rem;
+            box-shadow: none;
+        }
+
+        @media (max-width: 991px) {
+            .admin-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-sidebar {
+                position: static;
+                height: auto;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block page_body %}
+    {% set menu_items = admin_view.admin.menu() %}
+    {% set active_admin = g.current_user if g.current_user is defined else None %}
+    <div class="admin-shell">
+        <aside class="admin-sidebar">
+            <a class="admin-sidebar__brand" href="{{ admin_view.admin.url }}">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NumberGuesser logo">
+                <span class="admin-sidebar__brand-copy">
+                    <span class="admin-sidebar__brand-title">NumberGuesser Admin</span>
+                    <span class="admin-sidebar__brand-subtitle">Management Console</span>
+                </span>
+            </a>
+
+            <nav class="admin-sidebar__nav" aria-label="Admin">
+                {% for item in menu_items %}
+                    {% if item.is_accessible() and item.is_visible() and not item.is_category() %}
+                        <a
+                            class="admin-sidebar__link {{ 'is-active' if item.is_active(admin_view) else '' }}"
+                            href="{{ item.get_url() }}"
+                            {% if item.target %}target="{{ item.target }}"{% endif %}
+                        >
+                            <span class="admin-sidebar__icon">{{ item.name[:1] }}</span>
+                            <span>{{ item.name }}</span>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </nav>
+
+            <div class="admin-sidebar__footer">
+                <div class="admin-sidebar__user-label">Signed In As</div>
+                <div class="admin-sidebar__user-name">{{ active_admin.username if active_admin else 'Admin' }}</div>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+            <div class="admin-content__surface">
+                {% block messages %}
+                    {% with messages = get_flashed_messages(with_categories=True) %}
+                        {% if messages %}
+                            <div class="admin-flash-stack">
+                                {% for category, message in messages %}
+                                    {% set mapping = {'message': 'info', 'error': 'danger'} %}
+                                    <div class="admin-flash alert alert-{{ mapping.get(category, category) }} alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                {% endblock %}
+
+                {% set render_ctx = h.resolve_ctx() %}
+
+                {% if admin_view.endpoint != 'admin' %}
+                    <header class="admin-page-header">
+                        <h1 class="admin-page-title">{{ admin_view.name }}</h1>
+                        <p class="admin-page-subtitle">Manage {{ admin_view.name|lower }} records with the same visual language used across the main NumberGuesser app.</p>
+                    </header>
+                    <section class="admin-page-card">
+                        {{ self.body() }}
+                    </section>
+                {% else %}
+                    {{ self.body() }}
+                {% endif %}
+            </div>
+        </main>
+    </div>
+{% endblock %}
+
+{% block tail_js %}
+    {{ super() }}
+{% endblock %}

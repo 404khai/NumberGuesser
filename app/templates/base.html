@@ -55,6 +55,12 @@
             padding: 2rem;
         }
 
+        .card2 {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: var(--app-card-shadow);
+        } 
+
         .button {
             display: inline-flex;
             align-items: center;
@@ -300,10 +306,11 @@
         }
 
         .flash-region {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            padding-top: 0.75rem;
+            position: fixed;
+            top: 0.75rem;
+            left: 0;
+            right: 0;
+            z-index: 60;
             pointer-events: none;
         }
 
@@ -449,6 +456,7 @@
 </head>
 <body>
     <div class="site-shell">
+        {% include 'partials/navbar.html' %}
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="flash-region">
@@ -463,7 +471,6 @@
                 </div>
             {% endif %}
         {% endwith %}
-        {% include 'partials/navbar.html' %}
 
         <main class="site-main">
             {% block content %}{% endblock %}
