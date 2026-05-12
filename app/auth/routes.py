@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, make_response, redirect, render_template, url_for
+from flask import Blueprint, flash, make_response, redirect, render_template, request, url_for
 from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
 from sqlalchemy import or_
 
@@ -62,7 +62,9 @@ def login():
 
 @auth_bp.get("/logout")
 def logout():
-    response = make_response(redirect(url_for("index")))
+    next_url = request.args.get("next", type=str)
+    redirect_target = next_url if next_url and next_url.startswith("/") else url_for("index")
+    response = make_response(redirect(redirect_target))
     unset_jwt_cookies(response)
     flash("You have been signed out.", "success")
     return response

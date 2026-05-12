@@ -73,7 +73,7 @@ NumberGuesser/                          # Project root
 │   │   └── routes.py                   # Player statistics and recent game history
 │   ├── admin/                          # Admin integration package
 │   │   ├── __init__.py                 # Admin exports
-│   │   └── views.py                    # Secure Flask-Admin views and CLI bootstrap command
+│   │   └── views.py                    # Secure Flask-Admin views, formatters, promotion flow, and CLI bootstrap command
 │   ├── contact/                        # Contact blueprint
 │   │   ├── __init__.py                 # Contact blueprint export
 │   │   └── routes.py                   # Static contact page route
@@ -82,7 +82,7 @@ NumberGuesser/                          # Project root
 │   │   ├── forms.py                    # Feedback submission form
 │   │   └── routes.py                   # Authenticated feedback routes
 │   ├── templates/                      # Jinja2 templates used by Flask views
-│   │   ├── admin/                      # Admin dashboard template
+│   │   ├── admin/                      # Admin dashboard, shared master layout, and model view overrides
 │   │   ├── auth/                       # Login and registration templates
 │   │   ├── game/                       # Difficulty selection, play, and result templates
 │   │   ├── partials/                   # Reusable shared template fragments
@@ -235,7 +235,7 @@ Run the full test suite with coverage:
 pytest --cov=app tests/ -v
 ```
 
-The test suite covers authentication flows, gameplay state transitions, leaderboard rendering, protected admin access, and key route behaviors such as feedback and profile pages.
+The test suite covers authentication flows, gameplay state transitions, leaderboard rendering, protected admin access, admin sidebar behavior, and key route behaviors such as feedback and profile pages.
 
 Example output format:
 

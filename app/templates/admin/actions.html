@@ -1,0 +1,93 @@
+{% macro dropdown(actions, btn_class='nav-link dropdown-toggle') -%}
+    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)" role="button" aria-haspopup="true"
+       aria-expanded="false">{{ _gettext('With selected') }}<b class="caret"></b></a>
+    <div class="dropdown-menu">
+        {% for action_id, label in actions %}
+            <a
+                class="dropdown-item"
+                href="javascript:void(0)"
+                data-bulk-action="{{ action_id }}"
+                data-bulk-label="{{ _gettext(label) }}"
+            >{{ _gettext(label) }}</a>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro form(actions, url) %}
+    {% if actions %}
+        <form id="action_form" action="{{ url }}" method="POST" style="display: none">
+            {% if action_form.csrf_token %}
+                {{ action_form.csrf_token }}
+            {% elif csrf_token %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            {% endif %}
+            {{ action_form.url(value=return_url) }}
+            {{ action_form.action() }}
+        </form>
+    {% endif %}
+{% endmacro %}
+
+{% macro script(message, actions, actions_confirmation) %}
+    {% if actions %}
+        <script>
+            window.modelActions = window.modelActions || {};
+            window.modelActions.execute = function(actionName) {
+                const actionForm = document.getElementById("action_form");
+                const actionField = actionForm ? actionForm.querySelector("[name='action']") : null;
+                const selectedRows = Array.from(document.querySelectorAll(".action-checkbox:checked"));
+
+                if (!actionForm || !actionField) {
+                    return false;
+                }
+
+                if (!selectedRows.length) {
+                    if (window.adminConfirmAction) {
+                        window.adminConfirmAction({
+                            title: "Selection Required",
+                            message: {{ message|tojson|safe }},
+                            confirmLabel: "OK",
+                            cancelLabel: "",
+                            hideCancel: true
+                        });
+                    }
+                    return false;
+                }
+
+                const confirmations = {{ actions_confirmation|tojson|safe }};
+                const labelMap = {
+                    {% for action_id, label in actions %}
+                        "{{ action_id }}": {{ _gettext(label)|tojson|safe }}{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                };
+                const confirmMessage = confirmations[actionName] || "Are you sure you want to continue?";
+                const confirmTitle = labelMap[actionName] || "Confirm Action";
+
+                if (window.adminConfirmAction) {
+                    window.adminConfirmAction({
+                        title: confirmTitle,
+                        message: confirmMessage,
+                        confirmLabel: "Continue",
+                        onConfirm: function() {
+                            actionField.value = actionName;
+                            actionForm.submit();
+                        }
+                    });
+                    return false;
+                }
+
+                actionField.value = actionName;
+                actionForm.submit();
+                return false;
+            };
+
+            document.addEventListener("DOMContentLoaded", function() {
+                document.querySelectorAll("[data-bulk-action]").forEach(function(actionLink) {
+                    actionLink.addEventListener("click", function(event) {
+                        event.preventDefault();
+                        window.modelActions.execute(actionLink.dataset.bulkAction);
+                    });
+                });
+            });
+        </script>
+    {% endif %}
+{% endmacro %}
