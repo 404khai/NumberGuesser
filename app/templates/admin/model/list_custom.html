@@ -1,0 +1,23 @@
+{% extends 'admin/model/list.html' %}
+
+{% block model_menu_bar_after_filters %}
+    {{ super() }}
+    {% if admin_view.time_sort_column %}
+        <li class="nav-item ml-2">
+            <a
+                href="{{ admin_view.get_time_order_url(True) }}"
+                class="nav-link {{ 'active' if admin_view.is_desc_time_order() else '' }}"
+            >
+                Newest First
+            </a>
+        </li>
+        <li class="nav-item">
+            <a
+                href="{{ admin_view.get_time_order_url(False) }}"
+                class="nav-link {{ '' if admin_view.is_desc_time_order() else 'active' }}"
+            >
+                Oldest First
+            </a>
+        </li>
+    {% endif %}
+{% endblock %}
